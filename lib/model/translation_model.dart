@@ -1,19 +1,15 @@
 class TranslationModel {
-  final String word;
-  final String sourceLanguage;
-  final String targetLanguage;
+  final bool status;
+  final String message;
+  final String data;
 
-  TranslationModel({
-    required this.word,
-    required this.sourceLanguage,
-    required this.targetLanguage,
-  });
+  TranslationModel({required this.status, required this.message, required this.data});
 
   factory TranslationModel.fromJson(Map<String, dynamic> json) {
     return TranslationModel(
-      word: json['data'] ?? '',
-      sourceLanguage: 'indonesia',
-      targetLanguage: 'inggris',
+      status: json['status'] ?? false,
+      message: json['message'] ?? '',
+      data: json['data'] ?? '',
     );
   }
 }

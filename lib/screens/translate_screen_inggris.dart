@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kamus_new/api/translation_service.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
-import '../model/translation_model.dart';
+import 'package:kamus_new/model/translation_model.dart';
 
 class TranslateScreenEnglish extends StatefulWidget {
   const TranslateScreenEnglish({Key? key}) : super(key: key);
@@ -16,10 +16,11 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
   bool _isListening = false;
   final TextEditingController _textEditingController = TextEditingController();
   final TranslationService translationService = TranslationService(
-    baseUrl: 'https://api-kamus.jaksparohserver.my.id/',
+
   );
 
   String _translationResult = '';
+
   @override
   void initState() {
     super.initState();
@@ -79,7 +80,7 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
                         ),
                         Center(
                           child: Text(
-                            "English To Bima",
+                            "Indonesia To Inggris",
                             style: TextStyle(
                               fontSize: 30,
                               fontWeight: FontWeight.w600,
@@ -217,19 +218,19 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
   void _translateText() async {
     if (_text.isNotEmpty) {
       try {
-        TranslationModel translation = await translationService.getTranslation(
-          _text,
-          sourceLanguage: 'indonesia',
-          targetLanguage: 'inggris',
-        );
+        TranslationModel? translation = await translationService.getTranslation(_text);
 
-        setState(() {
-          _translationResult = translation.word;
-        });
+        if (translation != null) {
+          setState(() {
+            _translationResult = translation.data;
+          });
+        } else {
+          setState(() {
+            _translationResult = 'Terjadi kesalahan saat menerjemahkan kata.';
+          });
+        }
       } catch (e) {
         print('Error fetching translation: $e');
-        print(_translationResult);
-
         setState(() {
           _translationResult = 'Terjadi kesalahan saat menerjemahkan kata.';
         });
@@ -240,6 +241,7 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
       });
     }
   }
+
 
 
 
