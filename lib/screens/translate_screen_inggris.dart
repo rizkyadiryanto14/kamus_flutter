@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:kamus_new/api/bima_to_inggris.dart';
+import 'package:kamus_new/api/translation_service.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
-import '../model/BimaToInggris_model.dart';
+import '../model/translation_model.dart';
 
 class TranslateScreenEnglish extends StatefulWidget {
   const TranslateScreenEnglish({Key? key}) : super(key: key);
@@ -16,11 +16,10 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
   bool _isListening = false;
   final TextEditingController _textEditingController = TextEditingController();
   final TranslationService translationService = TranslationService(
-    baseUrl: 'https://restapi-kamus.jaksparohserver.my.id',
+    baseUrl: 'https://api-kamus.jaksparohserver.my.id/',
   );
 
   String _translationResult = '';
-
   @override
   void initState() {
     super.initState();
@@ -150,7 +149,7 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Center( // Tambahkan Center sebagai child dari Container
+                  child: Center(
                     child: Text(
                       _translationResult,
                       style: TextStyle(
@@ -160,12 +159,10 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
                   ),
                 ),
               ),
-
-              // Tombol untuk menerjemahkan kata di bawah hasil terjemahan
               Align(
                 alignment: Alignment.center,
                 child: Container(
-                  margin: EdgeInsets.only(top: 160), // Atur nilai sesuai keinginan Anda
+                  margin: EdgeInsets.only(top: 160),
                   child: ElevatedButton(
                     onPressed: _translateText,
                     child: Text('Translate'),
@@ -220,13 +217,19 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
   void _translateText() async {
     if (_text.isNotEmpty) {
       try {
-        TranslationModel translation =
-        await translationService.getTranslation(_text);
+        TranslationModel translation = await translationService.getTranslation(
+          _text,
+          sourceLanguage: 'indonesia',
+          targetLanguage: 'inggris',
+        );
+
         setState(() {
-          _translationResult = translation.data;
+          _translationResult = translation.word;
         });
       } catch (e) {
         print('Error fetching translation: $e');
+        print(_translationResult);
+
         setState(() {
           _translationResult = 'Terjadi kesalahan saat menerjemahkan kata.';
         });
@@ -237,4 +240,7 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
       });
     }
   }
+
+
+
 }

@@ -80,8 +80,7 @@ class _OcrTranslateState extends State<OcrTranslate> {
                         padding: const EdgeInsets.only(top: 10),
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            primary: Colors.white,
-                            onPrimary: Colors.grey,
+                            foregroundColor: Colors.grey, backgroundColor: Colors.white,
                             shadowColor: Colors.grey[400],
                             elevation: 10,
                             shape: RoundedRectangleBorder(
