@@ -12,9 +12,10 @@ class TranslateScreenBima extends StatefulWidget {
 class _TranslateScreenBimaState extends State<TranslateScreenBima> {
   late stt.SpeechToText _speech;
   bool _isListening = false;
-  // ignore: unused_field
   String _text = '';
   final TextEditingController _textEditingController = TextEditingController();
+
+  String _translationResult = '';
 
   @override
   void initState() {
@@ -47,7 +48,7 @@ class _TranslateScreenBimaState extends State<TranslateScreenBima> {
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height,
                   decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 102, 239, 74),
+                    color: Color.fromARGB(255, 97, 232, 84),
                   ),
                 ),
                 Container(
@@ -132,6 +133,36 @@ class _TranslateScreenBimaState extends State<TranslateScreenBima> {
                 ),
               ),
             ),
+            Align(
+              alignment: Alignment.topCenter,
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.8,
+                height: 30,
+                margin: EdgeInsets.only(top: 420),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Center(
+                  child: Text(
+                    _translationResult,
+                    style: TextStyle(
+                        fontSize: 16
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.center,
+              child: Container(
+                margin: EdgeInsets.only(top: 160),
+                child: ElevatedButton(
+                  onPressed: () {},
+                  child: Text('Translate'),
+                ),
+              ),
+            )
           ],
         ),
       ),

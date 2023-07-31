@@ -19,7 +19,7 @@ class TranslationService {
       print(responseBody);
       return TranslationModel.fromJson(responseBody);
     } else {
-      // Permintaan gagal
+      //Penanganan error
       print('Error: ${response.statusCode}');
       return null;
     }

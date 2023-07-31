@@ -15,9 +15,7 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
   String _text = '';
   bool _isListening = false;
   final TextEditingController _textEditingController = TextEditingController();
-  final TranslationService translationService = TranslationService(
-
-  );
+  final TranslationService translationService = TranslationService();
 
   String _translationResult = '';
 
@@ -241,8 +239,4 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
       });
     }
   }
-
-
-
-
 }

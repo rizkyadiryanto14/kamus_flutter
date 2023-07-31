@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:kamus_new/api/translation_service.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:kamus_new/model/translation_model.dart';
 
 
 class TranslateScreenIndonesia extends StatefulWidget {
   const TranslateScreenIndonesia({Key? key}) : super(key: key);
 
   @override
-  State<TranslateScreenIndonesia> createState() =>
-      _TranslateScreenIndonesiaState();
+  State<TranslateScreenIndonesia> createState() => _TranslateScreenIndonesiaState();
 }
 
 class _TranslateScreenIndonesiaState extends State<TranslateScreenIndonesia> {
@@ -15,6 +16,9 @@ class _TranslateScreenIndonesiaState extends State<TranslateScreenIndonesia> {
   bool _isListening = false;
   String _text = '';
   final TextEditingController _textEditingController = TextEditingController();
+  final TranslationService translationService = TranslationService();
+
+  String _translationResult = '';
 
   @override
   void initState() {
@@ -134,6 +138,36 @@ class _TranslateScreenIndonesiaState extends State<TranslateScreenIndonesia> {
                 ),
               ),
             ),
+            Align(
+              alignment: Alignment.topCenter,
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.8,
+                height: 30,
+                margin: EdgeInsets.only(top: 420),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Center(
+                  child: Text(
+                    _translationResult,
+                    style: TextStyle(
+                      fontSize: 16
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.center,
+              child: Container(
+                margin: EdgeInsets.only(top: 160),
+                child: ElevatedButton(
+                  onPressed: () {},
+                  child: Text('Translate'),
+                ),
+              ),
+            )
           ],
         ),
       ),
@@ -178,3 +212,4 @@ class _TranslateScreenIndonesiaState extends State<TranslateScreenIndonesia> {
     }
   }
 }
+
