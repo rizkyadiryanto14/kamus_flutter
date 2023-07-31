@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kamus_new/api/translation_service.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
-import 'package:kamus_new/model/translation_model.dart';
 
 
 class TranslateScreenIndonesia extends StatefulWidget {
