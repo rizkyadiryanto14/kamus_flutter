@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Contribute extends StatefulWidget {
-  const Contribute({super.key});
+  const Contribute({Key? key}) : super(key: key);
 
   @override
   State<Contribute> createState() => _ContributeState();
@@ -25,92 +25,165 @@ class _ContributeState extends State<Contribute> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Saran Kata'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: DropdownButton<String>(
-                    value: _selectedSourceLanguage,
-                    onChanged: (newValue) {
-                      setState(() {
-                        _selectedSourceLanguage = newValue!;
-                      });
-                    },
-                    items: _sourceLanguages.map((lang) {
-                      return DropdownMenuItem<String>(
-                        value: lang,
-                        child: Text(lang),
-                      );
-                    }).toList(),
+      body: SingleChildScrollView(
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: Stack(
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomLeft,
+                    colors: [
+                      Colors.teal,
+                      Colors.lightBlue,
+                    ],
                   ),
                 ),
-                IconButton(
-                  onPressed: () {
-                    String temp = _selectedSourceLanguage;
-                    setState(() {
-                      _selectedSourceLanguage = _selectedTargetLanguage;
-                      _selectedTargetLanguage = temp;
-                    });
-                  },
-                  icon: Icon(Icons.swap_horiz),
-                ),
-                Expanded(
-                  child: DropdownButton<String>(
-                    value: _selectedTargetLanguage,
-                    onChanged: (newValue) {
-                      setState(() {
-                        _selectedTargetLanguage = newValue!;
-                      });
-                    },
-                    items: _targetLanguages.map((lang) {
-                      return DropdownMenuItem<String>(
-                        value: lang,
-                        child: Text(lang),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 16),
-            TextField(
-              controller: _suggestionController,
-              decoration: InputDecoration(
-                labelText: 'Masukkan saran kata',
               ),
-            ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                String suggestion = _suggestionController.text;
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: Text('Berhasil'),
-                    content: Text('Saran kata telah disimpan: $suggestion'),
-                    actions: [
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height / 2.7,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(100),
+                    bottomRight: Radius.circular(100),
+                  ),
+                ),
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      top: -120,
+                      child: Center(
+                        child: Image.asset(
+                          "images/KRongga.png",
+                          fit: BoxFit.contain,
+                          width: 78,
+                          color: Colors.green,
+                        ),
+                      ),
+                    ),
+                    Center(
+                      child: Text(
+                        "Saran Kata",
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Align(
+                alignment: Alignment.topCenter,
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  margin: EdgeInsets.only(
+                      top: MediaQuery.of(context).size.height / 2.7 - 20),
+                  padding: EdgeInsets.symmetric(vertical: 17),
+                  child: Column(
+                    // crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: DropdownButton<String>(
+                              value: _selectedSourceLanguage,
+                              onChanged: (newValue) {
+                                setState(() {
+                                  _selectedSourceLanguage = newValue!;
+                                });
+                              },
+                              items: _sourceLanguages.map((lang) {
+                                return DropdownMenuItem<String>(
+                                  value: lang,
+                                  child: Text(
+                                      lang,
+
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              String temp = _selectedSourceLanguage;
+                              setState(() {
+                                _selectedSourceLanguage =
+                                    _selectedTargetLanguage;
+                                _selectedTargetLanguage = temp;
+                              });
+                            },
+                            icon: Icon(
+                              Icons.swap_horiz,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Expanded(
+                            child: DropdownButton<String>(
+                              value: _selectedTargetLanguage,
+                              onChanged: (newValue) {
+                                setState(() {
+                                  _selectedTargetLanguage = newValue!;
+                                });
+                              },
+                              items: _targetLanguages.map((lang) {
+                                return DropdownMenuItem<String>(
+                                  value: lang,
+                                  child: Text(
+                                    lang,
+
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 16),
+                      TextField(
+                        controller: _suggestionController,
+                        decoration: InputDecoration(
+                          labelText: 'Masukkan saran kata',
+
+                        ),
+                      ),
+                      SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: () {
-                          Navigator.of(context).pop();
+                          String suggestion = _suggestionController.text;
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text('Berhasil'),
+                              content:
+                              Text('Saran kata telah disimpan: $suggestion'),
+                              actions: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('OK'),
+                                ),
+                              ],
+                            ),
+                          );
+                          _suggestionController.clear();
                         },
-                        child: Text('OK'),
+                        child: Text('Kirim Saran'),
                       ),
                     ],
                   ),
-                );
-                // Reset textfield setelah sukses mengirimkan saran kata
-                _suggestionController.clear();
-              },
-              child: Text('Kirim Saran'),
-            ),
-          ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

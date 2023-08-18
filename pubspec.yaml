@@ -1,7 +1,6 @@
 name: kamus_new
 description: A new Flutter project.
-
-publish_to:
+publish_to :
 
 version: 1.0.0+1
 
@@ -14,19 +13,33 @@ dependencies:
 
   cupertino_icons: ^1.0.2
   speech_to_text: ^6.3.0
-  curved_navigation_bar: ^1.0.3
   http: ^1.1.0
-  google_ml_kit: ^0.16.1
-  image_picker: ^1.0.1
+  google_ml_kit: ^0.16.2
+  image_picker: ^1.0.2
+  image_cropper: ^5.0.0
+  tutorial_coach_mark: ^1.2.9
+  flutter_tts: ^3.7.0
+  flutter_screenutil: ^5.8.4
+  google_fonts: ^5.1.0
+  intl: ^0.18.1
+  curved_navigation_bar: ^1.0.3
+  shared_preferences: ^2.2.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.13.1
+  flutter_lints: ^2.0.0
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/KRongga.png"
 
 flutter:
-
   uses-material-design: true
 
   assets:
     - images/
+    - assets/images/
 

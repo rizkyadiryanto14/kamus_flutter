@@ -3,24 +3,21 @@ import 'package:kamus_new/api/translation_service_indonesia.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:kamus_new/model/translation_model.dart';
-import 'package:kamus_new/api/api_cloud_reverse.dart';
-import 'package:kamus_new/model/apicloud_model.dart';
 
-class TranslateScreenIndonesia extends StatefulWidget {
-  const TranslateScreenIndonesia({Key? key}) : super(key: key);
+class TranslateScreenBImaIndonesia extends StatefulWidget {
+  const TranslateScreenBImaIndonesia({Key? key}) : super(key: key);
 
   @override
-  State<TranslateScreenIndonesia> createState() => _TranslateScreenIndonesiaState();
+  State<TranslateScreenBImaIndonesia> createState() => _TranslateScreenBImaIndonesiaState();
 }
 
-class _TranslateScreenIndonesiaState extends State<TranslateScreenIndonesia> {
+class _TranslateScreenBImaIndonesiaState extends State<TranslateScreenBImaIndonesia> {
   FlutterTts flutterTts = FlutterTts();
   late stt.SpeechToText _speech;
   String _text = '';
   bool _isListening = false;
   final TextEditingController _textEditingController = TextEditingController();
-  final TranslationServiceIndonesia translationServiceIndonesia = TranslationServiceIndonesia();
-  final ApiCloudServiceReverse apiCloudServiceReverse = ApiCloudServiceReverse();
+  final TranslationServiceIndonesia translationService = TranslationServiceIndonesia();
 
   String _translationResult = '';
 
@@ -60,8 +57,8 @@ class _TranslateScreenIndonesiaState extends State<TranslateScreenIndonesia> {
                           begin: Alignment.topRight,
                           end: Alignment.bottomLeft,
                           colors: [
+                            Colors.greenAccent,
                             Colors.blue,
-                            Colors.red,
                           ],
                         )
                     ),
@@ -91,7 +88,7 @@ class _TranslateScreenIndonesiaState extends State<TranslateScreenIndonesia> {
                         ),
                         Center(
                           child: Text(
-                            "Inggris To Bima",
+                            "Bima To Indonesia",
                             style: TextStyle(
                               fontSize: 30,
                               fontWeight: FontWeight.w600,
@@ -228,14 +225,6 @@ class _TranslateScreenIndonesiaState extends State<TranslateScreenIndonesia> {
     await flutterTts.speak(_translationResult);
   }
 
-  // void _updateContainerHeight() {
-  //   setState(() {
-  //     _containerHeight = _text.isEmpty
-  //         ? 30
-  //         : 50 + _text.split('\n').length * 20;
-  //   });
-  // }
-
   void _listen() async {
     if (!_isListening) {
       bool available = await _speech.initialize(
@@ -250,6 +239,7 @@ class _TranslateScreenIndonesiaState extends State<TranslateScreenIndonesia> {
           print('Speech recognition error: $error');
         },
       );
+
       if (available) {
         setState(() {
           _isListening = true;
@@ -273,64 +263,30 @@ class _TranslateScreenIndonesiaState extends State<TranslateScreenIndonesia> {
     }
   }
 
-  // void _translateText() async {
-  //   if (_text.isNotEmpty) {
-  //     try {
-  //       TranslationModel? translation = await translationServiceIndonesia.getTranslation(_text);
-  //       if (translation != null) {
-  //           ApiCloudModel? translationText = await apiCloudServiceReverse.getApiCloudReverse(translation.data);
-  //         if (translationText != null) {
-  //           setState(() {
-  //             _translationResult = translationText.data?.translatedText ?? 'Tidak ada hasil terjemahan.';
-  //           });
-  //         } else {
-  //           setState(() {
-  //             _translationResult = 'Terjadi kesalahan saat mendapatkan data dari ApiCloud.';
-  //           });
-  //         }
-  //       } else {
-  //         setState(() {
-  //           _translationResult = 'Terjadi kesalahan saat menerjemahkan kata.';
-  //         });
-  //       }
-  //     } catch (e) {
-  //       print('Error fetching translation: $e');
-  //       setState(() {
-  //         _translationResult = 'Terjadi kesalahan saat menerjemahkan kata.';
-  //       });
-  //     }
-  //   } else {
-  //     setState(() {
-  //       _translationResult = '';
-  //     });
-  //   }
-  // }
-
-void _translateText() async {
-    if(_text.isNotEmpty) {
+  void _translateText() async {
+    if (_text.isNotEmpty) {
       try {
-        ApiCloudModel? translationText = await apiCloudServiceReverse.getApiCloudReverse(_text);
-        print(translationText);
-        if(translationText != null) {
-          String translatedText = translationText.data?.translatedText ?? '';
-          TranslationModel? translation = await translationServiceIndonesia.getTranslationReverse(translatedText);
-          if(translationText != null){
-            setState(() {
-              _translationResult = translation!.data;
-              print(_translationResult);
-            });
-          }else {
-            setState(() {
-              _translationResult = 'Terjadi kesalahan saat mendapatkan data dari ApiCloud.';
-            });
-          }
+        TranslationModel? translation = await translationService.getTranslationReverse(_text);
+
+        if (translation != null) {
+          setState(() {
+            _translationResult = translation.data;
+          });
+        } else {
+          setState(() {
+            _translationResult = 'Terjadi kesalahan saat menerjemahkan kata.';
+          });
         }
       } catch (e) {
-        print('Error Fetching translation : $e');
+        print('Error fetching translation: $e');
         setState(() {
           _translationResult = 'Terjadi kesalahan saat menerjemahkan kata.';
         });
       }
+    } else {
+      setState(() {
+        _translationResult = '';
+      });
     }
   }
 }

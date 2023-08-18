@@ -1,19 +1,36 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:kamus_new/api/translation_service_indonesia.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:kamus_new/model/translation_model.dart';
 
 class TranslateScreenBima extends StatefulWidget {
-  const TranslateScreenBima({super.key});
+  const TranslateScreenBima({Key? key}) : super(key: key);
 
   @override
   State<TranslateScreenBima> createState() => _TranslateScreenBimaState();
 }
 
 class _TranslateScreenBimaState extends State<TranslateScreenBima> {
+  FlutterTts flutterTts = FlutterTts();
   late stt.SpeechToText _speech;
-  bool _isListening = false;
   String _text = '';
+  bool _isListening = false;
   final TextEditingController _textEditingController = TextEditingController();
+  final TranslationServiceIndonesia translationService = TranslationServiceIndonesia();
+
+  String _selectedSourceLanguage = 'Bahasa Indonesia';
+  String _selectedTargetLanguage = 'English';
+  List<String> _sourceLanguages = [
+    'Bahasa Indonesia',
+    'English',
+    'Bima'
+  ];
+  List<String> _targetLanguages = [
+    'English',
+    'Bahasa Indonesia',
+    'Bima'
+  ];
 
   String _translationResult = '';
 
@@ -37,136 +54,224 @@ class _TranslateScreenBimaState extends State<TranslateScreenBima> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        child: Stack(
-          children: [
-            Stack(
-              children: [
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                  decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 97, 232, 84),
+      body: SingleChildScrollView(
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: Stack(
+            children: [
+              Stack(
+                children: [
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topRight,
+                          end: Alignment.bottomLeft,
+                          colors: [
+                            Colors.greenAccent,
+                            Colors.blue,
+                          ],
+                        )
+                    ),
                   ),
-                ),
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height / 2.7,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height / 2.7,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
                         bottomLeft: Radius.circular(100),
-                        bottomRight: Radius.circular(100)),
-                  ),
-                  child: Stack(
-                    children: [
-                      Positioned.fill(
-                        top: -120,
-                        child: Center(
-                          child: Image.asset(
-                            "images/kamus.png",
-                            fit: BoxFit.contain,
-                            width: 90,
+                        bottomRight: Radius.circular(100),
+                      ),
+                    ),
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                          top: -120,
+                          child: Center(
+                            child: Image.asset(
+                              "images/KRongga.png",
+                              fit: BoxFit.contain,
+                              width: 78,
+                              color: Colors.green,
+                            ),
                           ),
+                        ),
+                        Center(
+                          child: Text(
+                            "Indonesia To Bima",
+                            style: TextStyle(
+                              fontSize: 30,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                 Align(
+                   alignment: Alignment.topCenter,
+                   child: Container(
+                     width: MediaQuery.of(context).size.width * 0.8,
+                     margin: EdgeInsets.only(
+                       top: MediaQuery.of(context).size.height / 2.7 - 90,
+                     ),
+                     padding: EdgeInsets.symmetric(vertical: 16),
+                     child: Column(
+                       children: [
+                         Row(
+                           children: [
+                             Expanded(
+                               child: DropdownButton<String>(
+                                 value: _selectedSourceLanguage,
+                                 onChanged: (newValue) {
+                                   setState(() {
+                                     _selectedSourceLanguage = newValue!;
+                                   });
+                                 },
+                                 items: _sourceLanguages.map((lang){
+                                   return DropdownMenuItem<String>(
+                                     value: lang,
+                                     child: Text(
+                                       lang,
+                                     ),
+                                   );
+                                 }).toList(),
+                               ),
+                             ),
+                           ],
+                         )
+                       ],
+                     ),
+                   ),
+                 )
+                ],
+              ),
+              Align(
+                alignment: Alignment.topCenter,
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  height: 30,
+                  margin: EdgeInsets.only(top: 328),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      FloatingActionButton(
+                        heroTag: UniqueKey(),
+                        onPressed: _listen,
+                        child: Icon(
+                          _isListening ? Icons.mic : Icons.mic_none,
                         ),
                       ),
-                      Center(
-                        child: Text(
-                          "Bima To English",
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                      SizedBox(width: 5),
+                      Text(
+                        'Tap to speak for input word or sentence',
+                        style: TextStyle(fontSize: 14, color: Colors.white),
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
-            Align(
-              alignment: Alignment.topCenter,
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.8,
-                height: 30,
-                margin: EdgeInsets.only(top: 328),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    FloatingActionButton(
-                      onPressed: _listen,
-                      child: Icon(_isListening ? Icons.mic : Icons.mic_none),
-                    ),
-                    SizedBox(width: 5),
-                    Text(
-                      'Tap to speak for input word or sentence',
-                      style: TextStyle(fontSize: 14, color: Colors.white),
-                    ),
-                  ],
-                ),
               ),
-            ),
-            Align(
-              alignment: Alignment.topCenter,
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.8,
-                height: 30,
-                margin: EdgeInsets.only(top: 370),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: TextField(
-                  controller: _textEditingController,
-                  onChanged: (value) {
-                    setState(() {
-                      _text = value;
-                    });
-                  },
-                  decoration: InputDecoration(
+              Align(
+                alignment: Alignment.topCenter,
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  height: 120,
+                  margin: EdgeInsets.only(top: 370),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: TextField(
+                    controller: _textEditingController,
+                    onChanged: (value) {
+                      setState(() {
+                        _text = value;
+                        //_updateContainerHeight();
+                      });
+                    },
+                    maxLines: null,
+                    decoration: InputDecoration(
                       border: InputBorder.none,
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 80, vertical: 13),
-                      hintText: "Or type with your keyboard"),
-                ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.topCenter,
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.8,
-                height: 30,
-                margin: EdgeInsets.only(top: 420),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Center(
-                  child: Text(
-                    _translationResult,
-                    style: TextStyle(
-                        fontSize: 16
+                      contentPadding: EdgeInsets.symmetric(horizontal: 80, vertical: 13),
+                      hintText: "Or type with your keyboard",
                     ),
                   ),
                 ),
               ),
-            ),
-            Align(
-              alignment: Alignment.center,
-              child: Container(
-                margin: EdgeInsets.only(top: 160),
-                child: ElevatedButton(
-                  onPressed: () {},
-                  child: Text('Translate'),
+              Align(
+                alignment: Alignment.topCenter,
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  height: 30,
+                  margin: EdgeInsets.only(top: 493),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      FloatingActionButton(
+                        heroTag: UniqueKey(),
+                        onPressed: _speak,
+                        child: Icon(
+                            Icons.speaker_phone_sharp
+                        ),
+                      ),
+                      SizedBox(width: 5),
+                      Text(
+                        'Tap to speak for input word or sentence',
+                        style: TextStyle(fontSize: 14, color: Colors.white),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            )
-          ],
+              Align(
+                alignment: Alignment.topCenter,
+                child: Container(
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    height: 120,
+                    margin: EdgeInsets.only(top: 530),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          _translationResult,
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    )
+                ),
+              ),
+
+              Align(
+                alignment: Alignment.center,
+                child: Container(
+                  margin: EdgeInsets.only(top: 565),
+                  child: ElevatedButton(
+                    onPressed: _translateText,
+                    child: Text('Translate'),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  Future<void> _speak() async {
+    await flutterTts.setLanguage("en-US");
+    await flutterTts.setPitch(1.0);
+    await flutterTts.setSpeechRate(0.5);
+    await flutterTts.speak(_translationResult);
   }
 
   void _listen() async {
@@ -180,9 +285,7 @@ class _TranslateScreenBimaState extends State<TranslateScreenBima> {
           }
         },
         onError: (error) {
-          if (kDebugMode) {
-            print('Speech recognition error: $error');
-          }
+          print('Speech recognition error: $error');
         },
       );
 
@@ -191,7 +294,7 @@ class _TranslateScreenBimaState extends State<TranslateScreenBima> {
           _isListening = true;
         });
         _speech.listen(
-          onResult: (result) {
+          onResult: (result) async {
             if (result.finalResult) {
               setState(() {
                 _text = result.recognizedWords;
@@ -205,6 +308,33 @@ class _TranslateScreenBimaState extends State<TranslateScreenBima> {
       setState(() {
         _isListening = false;
         _speech.stop();
+      });
+    }
+  }
+
+  void _translateText() async {
+    if (_text.isNotEmpty) {
+      try {
+        TranslationModel? translation = await translationService.getTranslationReverse(_text);
+
+        if (translation != null) {
+          setState(() {
+            _translationResult = translation.data;
+          });
+        } else {
+          setState(() {
+            _translationResult = 'Terjadi kesalahan saat menerjemahkan kata.';
+          });
+        }
+      } catch (e) {
+        print('Error fetching translation: $e');
+        setState(() {
+          _translationResult = 'Terjadi kesalahan saat menerjemahkan kata.';
+        });
+      }
+    } else {
+      setState(() {
+        _translationResult = '';
       });
     }
   }
