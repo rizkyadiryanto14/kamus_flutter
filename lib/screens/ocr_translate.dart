@@ -81,6 +81,7 @@ class _OcrTranslateState extends State<OcrTranslate> {
       TargetFocus(
           identify: "galery",
           keyTarget: galery,
+          shape: ShapeLightFocus.RRect,
           contents: [
             TargetContent(
                 align: ContentAlign.top,
@@ -101,6 +102,7 @@ class _OcrTranslateState extends State<OcrTranslate> {
       TargetFocus(
           identify: "camera",
           keyTarget: camera,
+          shape: ShapeLightFocus.RRect,
           contents: [
             TargetContent(
                 align: ContentAlign.top,
@@ -121,6 +123,7 @@ class _OcrTranslateState extends State<OcrTranslate> {
       TargetFocus(
           identify: "crop",
           keyTarget: crop,
+          shape: ShapeLightFocus.RRect,
           contents: [
             TargetContent(
                 align: ContentAlign.top,

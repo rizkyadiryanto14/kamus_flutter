@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:kamus_new/api/saran_kata_service.dart';
 import 'package:kamus_new/model/saran_kata_model.dart';
 

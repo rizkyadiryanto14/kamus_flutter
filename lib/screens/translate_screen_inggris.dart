@@ -7,7 +7,6 @@ import 'package:kamus_new/model/translation_model.dart';
 import 'package:kamus_new/model/apicloud_model.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:kamus_new/api/api_cloud_reverse.dart';
 import 'package:kamus_new/api/translation_service_indonesia.dart';
 
@@ -39,16 +38,15 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
     _prefs = await SharedPreferences.getInstance();
   }
 
-  void _loadTutorialStatus(){
+  void _loadTutorialStatus() {
     setState(() {
       _showTutorial = _prefs?.getBool('showTutorial') ?? true;
     });
   }
 
-  void _saveTutorialStatus() {
-    _prefs?.setBool('showTutorial', false);
+  void _saveTutorialStatus() async {
+   await _prefs?.setBool('showTutorial', false);
   }
-
 
   String _selectedSourceLanguage = 'Indonesia';
   String _selectedTargetLanguage = 'English';
@@ -75,6 +73,26 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
   GlobalKey targetlang      = GlobalKey();
   GlobalKey reverse         = GlobalKey();
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _initializePreferences();
+  //   _loadTutorialStatus();
+  //   _speech = stt.SpeechToText();
+  //
+  //   _textEditingController.addListener(() {
+  //     setState(() {
+  //       _text = _textEditingController.text;
+  //     });
+  //   });
+  //
+  //   if (_showTutorial) {
+  //     WidgetsBinding.instance.addPostFrameCallback((_) {
+  //       _showTutorialCoachMark();
+  //     });
+  //   }
+  // }
+
   @override
   void initState() {
     super.initState();
@@ -82,18 +100,19 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
     _loadTutorialStatus();
     _speech = stt.SpeechToText();
 
-    _textEditingController.addListener(() {
-      setState(() {
-        _text = _textEditingController.text;
-      });
-    });
-
     if (_showTutorial) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _showTutorialCoachMark();
       });
     }
+
+    _textEditingController.addListener(() {
+      setState(() {
+        _text = _textEditingController.text;
+      });
+    });
   }
+
 
   void _showTutorialCoachMark(){
     if (_showTutorial) {
@@ -196,6 +215,7 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
       TargetFocus(
           identify: "input",
           keyTarget: input,
+          shape: ShapeLightFocus.RRect,
           contents: [
             TargetContent(
                 align: ContentAlign.bottom,
@@ -236,6 +256,7 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
       TargetFocus(
           identify: "output",
           keyTarget: output,
+          shape: ShapeLightFocus.RRect,
           contents: [
             TargetContent(
                 align: ContentAlign.top,
@@ -256,6 +277,7 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
       TargetFocus(
           identify: "Buttontranslate",
           keyTarget: Buttontranslate,
+          shape: ShapeLightFocus.RRect,
           contents: [
             TargetContent(
                 align: ContentAlign.top,
@@ -426,6 +448,7 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
                 ),
               ),
               Container(
+                key: input,
                 width: MediaQuery.of(context).size.width * 0.8,
                 height: 120,
                 margin: EdgeInsets.only(top: 10),
@@ -445,7 +468,6 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
                           });
                         },
                         maxLines: null,
-                        key: input,
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.symmetric(horizontal: 80, vertical: 13),
@@ -480,6 +502,7 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
                 ),
               ),
               Container(
+                key: output,
                 width: MediaQuery.of(context).size.width * 0.8,
                 height: 120,
                 margin: EdgeInsets.only(top: 10),
@@ -492,7 +515,6 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
                   children: [
                     Text(
                       _translationResult,
-                      key: output,
                       style: TextStyle(
                         fontSize: 16,
                       ),
