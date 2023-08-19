@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'package:kamus_new/api/saran_kata_service.dart';
+import 'package:kamus_new/model/saran_kata_model.dart';
+
 class Contribute extends StatefulWidget {
   const Contribute({Key? key}) : super(key: key);
 
@@ -9,6 +12,7 @@ class Contribute extends StatefulWidget {
 
 class _ContributeState extends State<Contribute> {
   final TextEditingController _suggestionController = TextEditingController();
+
   String _selectedSourceLanguage = 'Bahasa Indonesia';
   String _selectedTargetLanguage = 'English';
   List<String> _sourceLanguages = [
@@ -21,6 +25,8 @@ class _ContributeState extends State<Contribute> {
     'Bahasa Indonesia',
     'Bima'
   ];
+
+  final SaraKataService _saranKataService = SaraKataService();
 
   @override
   Widget build(BuildContext context) {
@@ -156,26 +162,7 @@ class _ContributeState extends State<Contribute> {
                       ),
                       SizedBox(height: 16),
                       ElevatedButton(
-                        onPressed: () {
-                          String suggestion = _suggestionController.text;
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: Text('Berhasil'),
-                              content:
-                              Text('Saran kata telah disimpan: $suggestion'),
-                              actions: [
-                                ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('OK'),
-                                ),
-                              ],
-                            ),
-                          );
-                          _suggestionController.clear();
-                        },
+                        onPressed: InsertSaranKata,
                         child: Text('Kirim Saran'),
                       ),
                     ],
@@ -193,5 +180,44 @@ class _ContributeState extends State<Contribute> {
   void dispose() {
     _suggestionController.dispose();
     super.dispose();
+  }
+
+  void InsertSaranKata() async{
+    String suggestion = _suggestionController.text;
+    String sourceLang = _selectedSourceLanguage;
+    String targetLang = _selectedTargetLanguage;
+
+    SaranKataModel? result = await _saranKataService.getSaranKata(sourceLang, targetLang, suggestion);
+
+    if(result != null && result.status){
+      showDialog(context: context, builder: (context) => AlertDialog(
+        title: Text('Berhasil'),
+        content: Text('Saran kata telah di simpan : $suggestion'),
+        actions: [
+          ElevatedButton(onPressed: () {
+            Navigator.of(context).pop();
+          }, child: Text('OK'),
+          ),
+        ],
+        ),
+      );
+      _suggestionController.clear();
+    }else {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Gagal'),
+          content: Text('Gagal menyimpan saran kata.'),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 }
