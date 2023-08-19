@@ -8,6 +8,9 @@ import 'package:kamus_new/model/apicloud_model.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:kamus_new/api/api_cloud_reverse.dart';
+import 'package:kamus_new/api/translation_service_indonesia.dart';
+
 class TranslateScreenEnglish extends StatefulWidget {
   const TranslateScreenEnglish({Key? key}) : super(key: key);
 
@@ -24,6 +27,8 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
   final TextEditingController _textEditingController = TextEditingController();
   final TranslationService translationService = TranslationService();
   final ApiCloudService apiCloudService = ApiCloudService();
+  final TranslationServiceIndonesia translationServiceIndonesia = TranslationServiceIndonesia();
+  final ApiCloudServiceReverse apiCloudServiceReverse = ApiCloudServiceReverse();
   String _translationResult = '';
 
   //shared preferences
@@ -105,7 +110,6 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
       tutorialCoachMark?.show(context: context);
     }
   }
-
 
   void _initTarget(){
     targets = [
@@ -343,6 +347,7 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
                                   onChanged: (newValue) {
                                     setState(() {
                                       _selectedSourceLanguage = newValue!;
+                                      print(_selectedSourceLanguage);
                                     });
                                   },
                                   items: _sourceLanguages.map((lang) {
@@ -350,7 +355,6 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
                                       value: lang,
                                       child: Text(
                                         lang,
-
                                       ),
                                     );
                                   }).toList(),
@@ -377,6 +381,7 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
                                   onChanged: (newValue) {
                                     setState(() {
                                       _selectedTargetLanguage = newValue!;
+                                      print(_selectedTargetLanguage);
                                     });
                                   },
                                   items: _targetLanguages.map((lang) {
@@ -555,30 +560,61 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
 
   void _translateText() async {
     if (_text.isNotEmpty) {
-      try {
-        TranslationModel? translation = await translationService.getTranslation(_text);
-        if (translation != null) {
-          ApiCloudModel? translationText = await apiCloudService.getApiCloud(translation.data);
-          if (translationText != null) {
-            setState(() {
-              _translationResult = translationText.data?.translatedText ?? 'Tidak ada hasil terjemahan.';
-            });
-          } else {
-            setState(() {
-              _translationResult = 'Terjadi kesalahan saat mendapatkan data dari ApiCloud.';
-            });
+      if(_selectedSourceLanguage == 'English' && _selectedTargetLanguage == 'Bima'){
+        try {
+          ApiCloudModel? translationText = await apiCloudServiceReverse.getApiCloudReverse(_text);
+          if(translationText != null) {
+            String translatedText = translationText.data?.translatedText ?? '';
+            TranslationModel? translation = await translationServiceIndonesia.getTranslationReverse(translatedText);
+            if(translationText != null){
+              setState(() {
+                _translationResult = translation!.data;
+                print(_translationResult);
+              });
+            }else {
+              setState(() {
+                _translationResult = 'Terjadi kesalahan saat mendapatkan data dari ApiCloud.';
+              });
+            }
           }
-        } else {
+        } catch (e) {
+          print('Error Fetching translation : $e');
           setState(() {
             _translationResult = 'Terjadi kesalahan saat menerjemahkan kata.';
           });
         }
-      } catch (e) {
-        print('Error fetching translation: $e');
+      }
+      else if(_selectedSourceLanguage == 'English' && _selectedTargetLanguage == 'Bima') {
+        try {
+          TranslationModel? translation = await translationService.getTranslation(_text);
+          if (translation != null) {
+            ApiCloudModel? translationText = await apiCloudService.getApiCloud(translation.data);
+            if (translationText != null) {
+              setState(() {
+                _translationResult = translationText.data?.translatedText ?? 'Tidak ada hasil terjemahan.';
+              });
+            } else {
+              setState(() {
+                _translationResult = 'Terjadi kesalahan saat mendapatkan data dari ApiCloud.';
+              });
+            }
+          } else {
+            setState(() {
+              _translationResult = 'Terjadi kesalahan saat menerjemahkan kata.';
+            });
+          }
+        } catch (e) {
+          print('Error fetching translation: $e');
+          setState(() {
+            _translationResult = 'Terjadi kesalahan saat menerjemahkan kata.';
+          });
+        }
+      }else {
         setState(() {
-          _translationResult = 'Terjadi kesalahan saat menerjemahkan kata.';
+          _translationResult = 'Bahasa Tidak Ditemukan';
         });
       }
+
     } else {
       setState(() {
         _translationResult = '';

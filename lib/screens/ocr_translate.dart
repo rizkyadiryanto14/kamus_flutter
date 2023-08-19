@@ -34,6 +34,7 @@ class _OcrTranslateState extends State<OcrTranslate> {
     'English',
     'Bima'
   ];
+
   List<String> _targetLanguages = [
     'English',
     'Indonesia',
