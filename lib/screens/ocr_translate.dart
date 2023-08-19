@@ -480,7 +480,7 @@ class _OcrTranslateState extends State<OcrTranslate> {
       try {
         TranslationModel? translations = await translationServiceOcr.getTranslation(textToTranslate);
         if (translations != null) {
-          ApiCloudModel? translationText = await apiCloudService.getApiCloud(translations.data);
+          ApiCloudModel? translationText = await apiCloudService.getApiCloud(translations.data, 'en', 'id');
           if (translationText != null) {
             setState(() {
               _translationResult = translationText.data?.translatedText ?? 'No translation result.';

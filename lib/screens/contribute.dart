@@ -19,6 +19,7 @@ class _ContributeState extends State<Contribute> {
     'English',
     'Bima'
   ];
+
   List<String> _targetLanguages = [
     'English',
     'Bahasa Indonesia',
@@ -110,7 +111,6 @@ class _ContributeState extends State<Contribute> {
                                   value: lang,
                                   child: Text(
                                       lang,
-
                                   ),
                                 );
                               }).toList(),
@@ -143,7 +143,6 @@ class _ContributeState extends State<Contribute> {
                                   value: lang,
                                   child: Text(
                                     lang,
-
                                   ),
                                 );
                               }).toList(),
@@ -156,7 +155,6 @@ class _ContributeState extends State<Contribute> {
                         controller: _suggestionController,
                         decoration: InputDecoration(
                           labelText: 'Masukkan saran kata',
-
                         ),
                       ),
                       SizedBox(height: 16),
@@ -185,6 +183,7 @@ class _ContributeState extends State<Contribute> {
     String suggestion = _suggestionController.text;
     String sourceLang = _selectedSourceLanguage;
     String targetLang = _selectedTargetLanguage;
+    print(targetLang);
 
     SaranKataModel? result = await _saranKataService.getSaranKata(sourceLang, targetLang, suggestion);
 

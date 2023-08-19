@@ -73,26 +73,6 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
   GlobalKey targetlang      = GlobalKey();
   GlobalKey reverse         = GlobalKey();
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _initializePreferences();
-  //   _loadTutorialStatus();
-  //   _speech = stt.SpeechToText();
-  //
-  //   _textEditingController.addListener(() {
-  //     setState(() {
-  //       _text = _textEditingController.text;
-  //     });
-  //   });
-  //
-  //   if (_showTutorial) {
-  //     WidgetsBinding.instance.addPostFrameCallback((_) {
-  //       _showTutorialCoachMark();
-  //     });
-  //   }
-  // }
-
   @override
   void initState() {
     super.initState();
@@ -221,7 +201,8 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
                 align: ContentAlign.bottom,
                 builder: (context, controller){
                   return CoachmarkDesc(
-                    text: "Ketik pada kotak box berikut untuk mengambil inputan dari keyboard, hasil dari pesan suara akan tampil pada bagian ini juga ",
+                    text: """
+Ketik pada kotak box berikut untuk mengambil inputan dari keyboard, hasil dari pesan suara akan tampil pada bagian ini juga """,
                     onNext: () {
                       controller.next();
                     },
@@ -606,11 +587,11 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
           });
         }
       }
-      else if(_selectedSourceLanguage == 'English' && _selectedTargetLanguage == 'Bima') {
+      else if(_selectedSourceLanguage == 'Bima' && _selectedTargetLanguage == 'English') {
         try {
           TranslationModel? translation = await translationService.getTranslation(_text);
           if (translation != null) {
-            ApiCloudModel? translationText = await apiCloudService.getApiCloud(translation.data);
+            ApiCloudModel? translationText = await apiCloudService.getApiCloud(translation.data, 'id', 'en');
             if (translationText != null) {
               setState(() {
                 _translationResult = translationText.data?.translatedText ?? 'Tidak ada hasil terjemahan.';
@@ -631,12 +612,47 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
             _translationResult = 'Terjadi kesalahan saat menerjemahkan kata.';
           });
         }
-      }else {
+      }else if(_selectedSourceLanguage == 'Indonesia' && _selectedTargetLanguage == 'English'){
+        try {
+          ApiCloudModel? translationText = await apiCloudService.getApiCloud(_text, 'id', 'en');
+          if(translationText != null){
+            setState(() {
+              _translationResult = translationText.data?.translatedText ?? 'Tidak ada hasil terjemahan.';
+            });
+          }else {
+            setState(() {
+              _translationResult = "Terjadi kesalahan saat mendapatkan Api CLoud";
+            });
+          }
+        }catch(e) {
+          print('Error fetching translation: $e');
+          setState(() {
+            _translationResult = 'Terjadi kesalahan saat menerjemahkan kata.';
+          });
+        }
+      }else if(_selectedSourceLanguage == 'English' && _selectedTargetLanguage == 'Indonesia'){
+        try{
+          ApiCloudModel? translationText = await apiCloudService.getApiCloud(_text, 'en', 'id');
+          if(translationText != null){
+            setState(() {
+              _translationResult = translationText.data?.translatedText ?? 'Tidak ada hasil terjemahan';
+            });
+          }else {
+            setState(() {
+              _translationResult = "Terjadi kesalahan saat mendapatkan APiCloud";
+            });
+          }
+        }catch(e){
+          print('Error fetching translation: $e');
+          setState(() {
+            _translationResult = 'Terjadi kesalahan saat menerjemahkan kata.';
+          });
+        }
+      } else {
         setState(() {
           _translationResult = 'Bahasa Tidak Ditemukan';
         });
       }
-
     } else {
       setState(() {
         _translationResult = '';
@@ -644,7 +660,6 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
     }
   }
 }
-
 
 class CoachmarkDesc extends StatefulWidget {
   const CoachmarkDesc({

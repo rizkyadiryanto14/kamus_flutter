@@ -5,10 +5,12 @@ import 'package:kamus_new/model/apicloud_model.dart';
 class ApiCloudService {
   final url = 'https://api-kamus.jaksparohserver.my.id/api/cloud';
 
-  Future<ApiCloudModel?> getApiCloud(String word) async {
+  Future<ApiCloudModel?> getApiCloud(String word, String sourceLang, String targetLang) async {
     final response = await post(
         Uri.parse(url), body: {
-          "word" : word
+          "word"            : word,
+          "source_language" : sourceLang,
+          "target_language" : targetLang
       }
     );
 
