@@ -11,7 +11,6 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // Delay the splash screen for 2 seconds
     Timer(Duration(seconds: 4), () {
       Navigator.pushReplacement(
         context,

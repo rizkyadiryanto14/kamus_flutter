@@ -18,10 +18,9 @@ class OcrTranslate extends StatefulWidget {
 
 class _OcrTranslateState extends State<OcrTranslate> {
   bool textScanning = false;
-  XFile? imageFile;
   String scannedText = "";
   XFile? _pickedFile;
-  CroppedFile? _croppedFile;
+  CroppedFile? _croppedImageFile;
   TextEditingController _recognizedTextController = TextEditingController();
   final TranslationService translationServiceOcr = TranslationService();
   final ApiCloudService apiCloudService = ApiCloudService();
@@ -256,8 +255,8 @@ class _OcrTranslateState extends State<OcrTranslate> {
                                         ),
                                       );
                                     }).toList(),
-                                  )
-                              )
+                                  ),
+                              ),
                             ],
                           )
                         ],
@@ -268,15 +267,15 @@ class _OcrTranslateState extends State<OcrTranslate> {
               ),
               SizedBox(height: 20),
               if (textScanning) CircularProgressIndicator(),
-              if (!textScanning && imageFile == null)
+              if (!textScanning && _croppedImageFile == null)
                 Container(
                   width: 200,
                   height: 200,
                   color: Colors.grey[300],
                 ),
-              if (imageFile != null)
+              if (_croppedImageFile != null)
                 Image.file(
-                  File(imageFile!.path),
+                  File(_croppedImageFile!.path),
                   width: 300,
                   height: 300,
                 ),
@@ -306,10 +305,9 @@ class _OcrTranslateState extends State<OcrTranslate> {
                         ),
                         Text(
                           "Gallery",
-
                           style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.black,
+                            fontSize: 13,
+                            color: Colors.black,
                           ),
                         ),
                       ],
@@ -339,10 +337,10 @@ class _OcrTranslateState extends State<OcrTranslate> {
                         ),
                         Text(
                           "Camera",
-                        style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.black,
-                        ),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.black,
+                          ),
                         ),
                       ],
                     ),
@@ -359,7 +357,7 @@ class _OcrTranslateState extends State<OcrTranslate> {
                           BorderRadius.circular(8.0)),
                     ),
                     onPressed: () {
-                      _cropImage();
+                      //_cropImage();
                     },
                     child: Column(
                       children: [
@@ -390,7 +388,8 @@ class _OcrTranslateState extends State<OcrTranslate> {
                 ),
                 child: Center(
                   child: Text(
-                    _translationResult,
+                    //_translationResult,
+                    scannedText,
                     style: TextStyle(
                       fontSize: 16,
                     ),
@@ -408,18 +407,18 @@ class _OcrTranslateState extends State<OcrTranslate> {
     final pickedFile = await ImagePicker().pickImage(source: source);
     if (pickedFile != null) {
       textScanning = true;
-      imageFile = pickedFile;
+      //imageFile = pickedFile;
       setState(() {
         _pickedFile = pickedFile;
-        getRecognisedText(pickedFile);
+        _cropImage(_pickedFile!);
       });
     }
   }
 
-  Future<void> _cropImage() async {
-    if (_pickedFile != null) {
+  Future<void> _cropImage(XFile pickedFile) async {
+    if (pickedFile != null) {
       final croppedFile = await ImageCropper().cropImage(
-        sourcePath: _pickedFile!.path,
+        sourcePath: pickedFile.path,
         compressFormat: ImageCompressFormat.jpg,
         compressQuality: 100,
         uiSettings: [
@@ -440,7 +439,7 @@ class _OcrTranslateState extends State<OcrTranslate> {
               height: 520,
             ),
             viewPort:
-                const CroppieViewPort(width: 480, height: 480, type: 'circle'),
+            const CroppieViewPort(width: 480, height: 480, type: 'circle'),
             enableExif: true,
             enableZoom: true,
             showZoomer: true,
@@ -448,29 +447,28 @@ class _OcrTranslateState extends State<OcrTranslate> {
         ],
       );
       if (croppedFile != null) {
-        //imageFile = croppedFile as XFile?;
         setState(() {
-          _croppedFile = croppedFile;
-          imageFile = _croppedFile as XFile?;
+          _croppedImageFile = croppedFile;
+          getRecognisedText(croppedFile);
         });
-        //await getRecognisedText(_pickedFile);
       }
     }
   }
 
-  void getRecognisedText(XFile image) async {
+  void getRecognisedText(CroppedFile image) async {
     final inputImage = InputImage.fromFilePath(image.path);
     final textDetector = GoogleMlKit.vision.textRecognizer();
     RecognizedText recognisedText = await textDetector.processImage(inputImage);
     await textDetector.close();
 
+    scannedText = "";
     for (TextBlock block in recognisedText.blocks) {
       for (TextLine line in block.lines) {
         scannedText = scannedText + line.text + "\n";
         _recognizedTextController.text = scannedText;
       }
     }
-    _translateText(scannedText);
+    //_translateText(scannedText);
     textScanning = false;
     setState(() {});
   }

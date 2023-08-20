@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kamus_new/screens/contribute.dart';
 import 'package:kamus_new/screens/ocr_translate.dart';
-import 'package:kamus_new/screens/translate_screen_bima.dart';
-import 'package:kamus_new/screens/translate_screen_bimaindonesia.dart';
-import 'package:kamus_new/screens/translate_screen_indonesia.dart';
 import 'package:kamus_new/screens/translate_screen_inggris.dart';
 
 class MainPage extends StatefulWidget {
@@ -17,9 +14,6 @@ class _MainPageState extends State<MainPage> {
 
   List pages = [
     TranslateScreenEnglish(),
-    // TranslateScreenIndonesia(),
-    // TranslateScreenBImaIndonesia(),
-    // TranslateScreenBima(),
     Contribute(),
     OcrTranslate()
   ];
@@ -47,9 +41,6 @@ class _MainPageState extends State<MainPage> {
         elevation: 0,
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.translate), label: 'English'),
-          // BottomNavigationBarItem(icon: Icon(Icons.ac_unit_rounded), label: 'Indonesia'),
-          // BottomNavigationBarItem(icon: Icon(Icons.translate), label: 'Bima'),
-          // BottomNavigationBarItem(icon: Icon(Icons.g_translate), label: 'Bima'),
           BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Contribut'),
           BottomNavigationBarItem(icon: Icon(Icons.image_outlined), label: 'OCR')
         ],

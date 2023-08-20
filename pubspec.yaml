@@ -21,8 +21,6 @@ dependencies:
   flutter_tts: ^3.7.0
   flutter_screenutil: ^5.8.4
   google_fonts: ^5.1.0
-  intl: ^0.18.1
-  curved_navigation_bar: ^1.0.3
   shared_preferences: ^2.2.0
 
 dev_dependencies:

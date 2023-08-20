@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:kamus_new/widgets/main_page.dart';
-import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -11,50 +10,18 @@ class WelcomeScreen extends StatefulWidget {
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
   bool _showUI = false;
-  TutorialCoachMark? tutorialCoachMark;
-  List<TargetFocus> targets = [];
-
-  GlobalKey welcome = GlobalKey();
 
   @override
   void initState() {
     super.initState();
     // Delay the UI animation for 500 milliseconds
-    Future.delayed(Duration(milliseconds: 500), () {
-        _showTutorialCoachMark();
+    Future.delayed(Duration(milliseconds: 100), () {
       setState(() {
         _showUI = true;
       }); 
     });
   }
 
-  void _showTutorialCoachMark(){
-    _initTarget();
-    tutorialCoachMark = TutorialCoachMark(
-      targets: targets,
-    )..show(context: context);
-  }
-
-  void _initTarget(){
-    targets = [
-      TargetFocus(
-        identify: "welcome",
-        keyTarget: welcome,
-        contents: [
-          TargetContent(
-            align: ContentAlign.top,
-            builder: (context, controller){
-              return CoachmarkDesc(
-                  text: "Lorem",
-                onNext: () {},
-                onSkip: () {},
-              );
-            }
-          )
-        ]
-      )
-    ];
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -180,67 +147,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             )
           );
         },
-      ),
-    );
-  }
-}
-
-class CoachmarkDesc extends StatefulWidget {
-  const CoachmarkDesc({
-    super.key,
-    required this.text,
-    this.skip = "Skip",
-    this.next = "Next",
-    this.onSkip,
-    this.onNext
-  });
-
-  final String text;
-  final String skip;
-  final String next;
-  final void Function()? onSkip;
-  final void Function()? onNext;
-
-  @override
-  State<CoachmarkDesc> createState() => _CoachmarkDescState();
-}
-
-class _CoachmarkDescState extends State<CoachmarkDesc> {
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(5),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            widget.text,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              TextButton(
-                onPressed: widget.onSkip,
-                child: Text(widget.skip),
-              ),
-              SizedBox(width: 16),
-              ElevatedButton(
-                  onPressed: widget.onNext,
-                  child: Text(
-                    widget.next
-                  ),
-              ),
-            ],
-          )
-        ],
       ),
     );
   }

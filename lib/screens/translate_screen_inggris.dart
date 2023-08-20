@@ -30,24 +30,6 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
   final ApiCloudServiceReverse apiCloudServiceReverse = ApiCloudServiceReverse();
   String _translationResult = '';
 
-  //shared preferences
-  SharedPreferences? _prefs;
-  bool _showTutorial = true;
-
-  void _initializePreferences() async {
-    _prefs = await SharedPreferences.getInstance();
-  }
-
-  void _loadTutorialStatus() {
-    setState(() {
-      _showTutorial = _prefs?.getBool('showTutorial') ?? true;
-    });
-  }
-
-  void _saveTutorialStatus() async {
-   await _prefs?.setBool('showTutorial', false);
-  }
-
   String _selectedSourceLanguage = 'Indonesia';
   String _selectedTargetLanguage = 'English';
   List<String> _sourceLanguages = [
@@ -73,6 +55,24 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
   GlobalKey targetlang      = GlobalKey();
   GlobalKey reverse         = GlobalKey();
 
+  //shared preferences
+  SharedPreferences? _prefs;
+  bool _showTutorial = true;
+
+  void _initializePreferences() async {
+    _prefs = await SharedPreferences.getInstance();
+  }
+
+  void _loadTutorialStatus() {
+    setState(() {
+      _showTutorial = _prefs?.getBool('showTutorial') ?? true;
+    });
+  }
+
+  void _saveTutorialStatus() async {
+    await _prefs?.setBool('showTutorial', false);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -85,7 +85,6 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
         _showTutorialCoachMark();
       });
     }
-
     _textEditingController.addListener(() {
       setState(() {
         _text = _textEditingController.text;
@@ -100,6 +99,7 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
       tutorialCoachMark = TutorialCoachMark(
         targets: targets,
         onFinish: () {
+          print("tutorial finis");
           setState(() {
             _showTutorial = false;
             _saveTutorialStatus();
