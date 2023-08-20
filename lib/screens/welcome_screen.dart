@@ -14,7 +14,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Delay the UI animation for 500 milliseconds
     Future.delayed(Duration(milliseconds: 100), () {
       setState(() {
         _showUI = true;
@@ -30,7 +29,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         builder: (context, constraints) {
           return AnimatedOpacity(
             opacity: _showUI ? 1.0 : 0.0,
-            duration: Duration(milliseconds: 500),
+            duration: Duration(milliseconds: 100),
             child: SingleChildScrollView(
               child: Container(
                 width: constraints.maxWidth,

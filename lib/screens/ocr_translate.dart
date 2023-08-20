@@ -389,7 +389,7 @@ class _OcrTranslateState extends State<OcrTranslate> {
                 child: Center(
                   child: Text(
                     //_translationResult,
-                    scannedText,
+                    _translationResult,
                     style: TextStyle(
                       fontSize: 16,
                     ),
@@ -468,35 +468,103 @@ class _OcrTranslateState extends State<OcrTranslate> {
         _recognizedTextController.text = scannedText;
       }
     }
-    //_translateText(scannedText);
+    _translateText(scannedText);
     textScanning = false;
     setState(() {});
   }
 
   void _translateText(String textToTranslate) async {
     if (textToTranslate.isNotEmpty) {
-      try {
-        TranslationModel? translations = await translationServiceOcr.getTranslation(textToTranslate);
-        if (translations != null) {
-          ApiCloudModel? translationText = await apiCloudService.getApiCloud(translations.data, 'en', 'id');
-          if (translationText != null) {
-            setState(() {
-              _translationResult = translationText.data?.translatedText ?? 'No translation result.';
-            });
+      if(_selectedSourceLanguage == 'Bima' && _selectedTargetLanguage == 'English'){
+        try {
+          TranslationModel? translations = await translationServiceOcr.getTranslation(textToTranslate);
+          print(translations?.data);
+          if (translations != null) {
+            ApiCloudModel? translationText = await apiCloudService.getApiCloud(translations.data, 'id', 'en');
+            if (translationText != null) {
+              setState(() {
+                _translationResult = translationText.data?.translatedText ?? 'No translation result.';
+              });
+            } else {
+              setState(() {
+                _translationResult = 'An error occurred while fetching data from ApiCloud.';
+              });
+            }
           } else {
             setState(() {
-              _translationResult = 'An error occurred while fetching data from ApiCloud.';
+              _translationResult = 'An error occurred while translating the text.';
             });
           }
-        } else {
+        } catch (e) {
+          print('Error fetching translation: $e');
           setState(() {
             _translationResult = 'An error occurred while translating the text.';
           });
         }
-      } catch (e) {
-        print('Error fetching translation: $e');
+      }else if(_selectedSourceLanguage == 'English' && _selectedTargetLanguage == 'Bima'){
+        try {
+          TranslationModel? translation = await translationServiceOcr.getTranslation(textToTranslate);
+          if (translation != null) {
+            ApiCloudModel? translationText = await apiCloudService.getApiCloud(translation.data, 'id', 'en');
+            if (translationText != null) {
+              setState(() {
+                _translationResult = translationText.data?.translatedText ?? 'Tidak ada hasil terjemahan.';
+              });
+            } else {
+              setState(() {
+                _translationResult = 'Terjadi kesalahan saat mendapatkan data dari ApiCloud.';
+              });
+            }
+          } else {
+            setState(() {
+              _translationResult = 'Terjadi kesalahan saat menerjemahkan kata.';
+            });
+          }
+        } catch (e) {
+          print('Error fetching translation: $e');
+          setState(() {
+            _translationResult = 'Terjadi kesalahan saat menerjemahkan kata.';
+          });
+        }
+      }else if(_selectedSourceLanguage == 'Indonesia' && _selectedTargetLanguage == 'English'){
+        try {
+          ApiCloudModel? translationText = await apiCloudService.getApiCloud(textToTranslate, 'id', 'en');
+          if(translationText != null){
+            setState(() {
+              _translationResult = translationText.data?.translatedText ?? 'Tidak ada hasil terjemahan.';
+            });
+          }else {
+            setState(() {
+              _translationResult = "Terjadi kesalahan saat mendapatkan Api CLoud";
+            });
+          }
+        }catch(e) {
+          print('Error fetching translation: $e');
+          setState(() {
+            _translationResult = 'Terjadi kesalahan saat menerjemahkan kata.';
+          });
+        }
+      }else if(_selectedSourceLanguage == 'English' && _selectedTargetLanguage == 'Indonesia'){
+        try{
+          ApiCloudModel? translationText = await apiCloudService.getApiCloud(textToTranslate, 'en', 'id');
+          if(translationText != null){
+            setState(() {
+              _translationResult = translationText.data?.translatedText ?? 'Tidak ada hasil terjemahan';
+            });
+          }else {
+            setState(() {
+              _translationResult = "Terjadi kesalahan saat mendapatkan APiCloud";
+            });
+          }
+        }catch(e){
+          print('Error fetching translation: $e');
+          setState(() {
+            _translationResult = 'Terjadi kesalahan saat menerjemahkan kata.';
+          });
+        }
+      }else {
         setState(() {
-          _translationResult = 'An error occurred while translating the text.';
+          _translationResult = "Translate Tidak Ditemukan";
         });
       }
     } else {
