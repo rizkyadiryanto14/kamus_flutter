@@ -648,7 +648,42 @@ Ketik pada kotak box berikut untuk mengambil inputan dari keyboard, hasil dari p
             _translationResult = 'Terjadi kesalahan saat menerjemahkan kata.';
           });
         }
-      } else {
+      }else if(_selectedSourceLanguage == 'Bima' && _selectedTargetLanguage == 'Indonesia'){
+        try  {
+          TranslationModel? translation = await translationService.getTranslation(_text);
+          if(translation != null){
+            setState(() {
+              _translationResult = translation.data;
+            });
+          }else {
+            _translationResult = "Translate tidak ditemukan";
+          }
+        }catch(e){
+          print('Error fetching translation: $e');
+          setState(() {
+            _translationResult = 'Terjadi kesalahan saat menerjemahkan kata.';
+          });
+        }
+      }else if(_selectedSourceLanguage == 'Indonesia' && _selectedTargetLanguage == 'Bima'){
+        try{
+            TranslationModel? translation = await translationServiceIndonesia.getTranslationReverse(_text);
+            if(translation != null){
+              setState(() {
+                _translationResult = translation.data;
+              });
+            }else {
+              setState(() {
+                _translationResult = "Translate tidak ditemukan";
+              });
+            }
+        }catch(e){
+          print('Error fetching translation: $e');
+          setState(() {
+            _translationResult = 'Terjadi kesalahan saat menerjemahkan kata.';
+          });
+        }
+      }
+      else {
         setState(() {
           _translationResult = 'Bahasa Tidak Ditemukan';
         });
