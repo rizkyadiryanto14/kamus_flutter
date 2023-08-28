@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:kamus_new/screens/splash_screen.dart';
-import 'package:kamus_new/screens/welcome_screen.dart';
 
 void main() => runApp(const MyApp());
 

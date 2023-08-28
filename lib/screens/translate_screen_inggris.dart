@@ -9,6 +9,7 @@ import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kamus_new/api/api_cloud_reverse.dart';
 import 'package:kamus_new/api/translation_service_indonesia.dart';
+import 'package:flutter/services.dart';
 
 class TranslateScreenEnglish extends StatefulWidget {
   const TranslateScreenEnglish({Key? key}) : super(key: key);
@@ -18,7 +19,6 @@ class TranslateScreenEnglish extends StatefulWidget {
 }
 
 class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
-
   FlutterTts flutterTts = FlutterTts();
   late stt.SpeechToText _speech;
   String _text = '';
@@ -26,52 +26,30 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
   final TextEditingController _textEditingController = TextEditingController();
   final TranslationService translationService = TranslationService();
   final ApiCloudService apiCloudService = ApiCloudService();
-  final TranslationServiceIndonesia translationServiceIndonesia = TranslationServiceIndonesia();
-  final ApiCloudServiceReverse apiCloudServiceReverse = ApiCloudServiceReverse();
+  final TranslationServiceIndonesia translationServiceIndonesia =
+      TranslationServiceIndonesia();
+  final ApiCloudServiceReverse apiCloudServiceReverse =
+      ApiCloudServiceReverse();
   String _translationResult = '';
-
   String _selectedSourceLanguage = 'Indonesia';
   String _selectedTargetLanguage = 'English';
-  List<String> _sourceLanguages = [
-    'Indonesia',
-    'English',
-    'Bima'
-  ];
-  List<String> _targetLanguages = [
-    'English',
-    'Indonesia',
-    'Bima'
-  ];
+  List<String> _sourceLanguages = ['Indonesia', 'English', 'Bima'];
+  List<String> _targetLanguages = ['English', 'Indonesia', 'Bima'];
 
   TutorialCoachMark? tutorialCoachMark;
   List<TargetFocus> targets = [];
 
-  GlobalKey spechtotext     = GlobalKey();
-  GlobalKey input           = GlobalKey();
-  GlobalKey output          = GlobalKey();
-  GlobalKey microphone      = GlobalKey();
-  GlobalKey Buttontranslate = GlobalKey();
-  GlobalKey sourceLang      = GlobalKey();
-  GlobalKey targetlang      = GlobalKey();
-  GlobalKey reverse         = GlobalKey();
-
-  //shared preferences
-  SharedPreferences? _prefs;
+  SharedPreferences? prefs;
   bool _showTutorial = true;
 
-  void _initializePreferences() async {
-    _prefs = await SharedPreferences.getInstance();
-  }
-
-  void _loadTutorialStatus() {
-    setState(() {
-      _showTutorial = _prefs?.getBool('showTutorial') ?? true;
-    });
-  }
-
-  void _saveTutorialStatus() async {
-    await _prefs?.setBool('showTutorial', false);
-  }
+  GlobalKey spechtotext = GlobalKey();
+  GlobalKey input = GlobalKey();
+  GlobalKey output = GlobalKey();
+  GlobalKey microphone = GlobalKey();
+  GlobalKey Buttontranslate = GlobalKey();
+  GlobalKey sourceLang = GlobalKey();
+  GlobalKey targetlang = GlobalKey();
+  GlobalKey reverse = GlobalKey();
 
   @override
   void initState() {
@@ -92,193 +70,6 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
     });
   }
 
-
-  void _showTutorialCoachMark(){
-    if (_showTutorial) {
-      _initTarget();
-      tutorialCoachMark = TutorialCoachMark(
-        targets: targets,
-        onFinish: () {
-          print("tutorial finis");
-          setState(() {
-            _showTutorial = false;
-            _saveTutorialStatus();
-          });
-        },
-      );
-      tutorialCoachMark?.show(context: context);
-    }
-  }
-
-  void _initTarget(){
-    targets = [
-      TargetFocus(
-          identify: "sourceLang",
-          keyTarget: sourceLang,
-          contents: [
-            TargetContent(
-                align: ContentAlign.bottom,
-                builder: (context, controller){
-                  return CoachmarkDesc(
-                    text: "Tekan tombol dropdown berikut untuk memilih sumber bahasa",
-                    onNext: () {
-                      controller.next();
-                    },
-                    onSkip: () {
-                      controller.skip();
-                    },
-                  );
-                }
-            ),
-          ]
-      ),
-      TargetFocus(
-          identify: "reverse",
-          keyTarget: reverse,
-          contents: [
-            TargetContent(
-                align: ContentAlign.bottom,
-                builder: (context, controller){
-                  return CoachmarkDesc(
-                    text: "Tekan icon berikut untuk membalik sumber dan tujuan bahasa",
-                    onNext: () {
-                      controller.next();
-                    },
-                    onSkip: () {
-                      controller.skip();
-                    },
-                  );
-                }
-            )
-          ]
-      ),
-      TargetFocus(
-          identify: "targetLang",
-          keyTarget: targetlang,
-          contents: [
-            TargetContent(
-                align: ContentAlign.bottom,
-                builder: (context, controller){
-                  return CoachmarkDesc(
-                    text: "Tekan dropdown berikut untuk memilih target bahasa",
-                    onNext: () {
-                      controller.next();
-                    },
-                    onSkip: () {
-                      controller.skip();
-                    },
-                  );
-                }
-            )
-          ]
-      ),
-      TargetFocus(
-          identify: "spechtotext",
-          keyTarget: spechtotext,
-          contents: [
-            TargetContent(
-                align: ContentAlign.bottom,
-                builder: (context, controller){
-                  return CoachmarkDesc(
-                    text: "Tekan tombol microphone untuk merekan suara",
-                    onNext: () {
-                      controller.next();
-                    },
-                    onSkip: () {
-                      controller.skip();
-                    },
-                  );
-                }
-            )
-          ]
-      ),
-      TargetFocus(
-          identify: "input",
-          keyTarget: input,
-          shape: ShapeLightFocus.RRect,
-          contents: [
-            TargetContent(
-                align: ContentAlign.bottom,
-                builder: (context, controller){
-                  return CoachmarkDesc(
-                    text: """
-Ketik pada kotak box berikut untuk mengambil inputan dari keyboard, hasil dari pesan suara akan tampil pada bagian ini juga """,
-                    onNext: () {
-                      controller.next();
-                    },
-                    onSkip: () {
-                      controller.skip();
-                    },
-                  );
-                }
-            )
-          ]
-      ),
-      TargetFocus(
-          identify: "microphone",
-          keyTarget: microphone,
-          contents: [
-            TargetContent(
-                align: ContentAlign.bottom,
-                builder: (context, controller){
-                  return CoachmarkDesc(
-                    text: "Tekan tombol berikut untuk membunyikan hasil translate",
-                    onNext: () {
-                      controller.next();
-                    },
-                    onSkip: () {
-                      controller.skip();
-                    },
-                  );
-                }
-            )
-          ]
-      ),
-      TargetFocus(
-          identify: "output",
-          keyTarget: output,
-          shape: ShapeLightFocus.RRect,
-          contents: [
-            TargetContent(
-                align: ContentAlign.top,
-                builder: (context, controller){
-                  return CoachmarkDesc(
-                    text: "Hasil Translate akan tampil pada bagian ini",
-                    onNext: () {
-                      controller.next();
-                    },
-                    onSkip: () {
-                      controller.skip();
-                    },
-                  );
-                }
-            )
-          ]
-      ),
-      TargetFocus(
-          identify: "Buttontranslate",
-          keyTarget: Buttontranslate,
-          shape: ShapeLightFocus.RRect,
-          contents: [
-            TargetContent(
-                align: ContentAlign.top,
-                builder: (context, controller){
-                  return CoachmarkDesc(
-                    text: "Tekan tombol ini untuk memulai translate",
-                    onNext: () {
-                      controller.next();
-                    },
-                    onSkip: () {
-                      controller.skip();
-                    },
-                  );
-                }
-            )
-          ]
-      ),
-    ];
-  }
-
   @override
   void dispose() {
     _textEditingController.dispose();
@@ -287,6 +78,24 @@ Ketik pada kotak box berikut untuk mengambil inputan dari keyboard, hasil dari p
 
   @override
   Widget build(BuildContext context) {
+
+    SharedPreferences preferences;
+    displayTutorial() async {
+      preferences = await SharedPreferences.getInstance();
+      bool? showTutorialStatus = preferences.getBool("displayTutorial");
+      if(showTutorialStatus == null){
+        preferences.setBool("displayTutorial", false);
+        return true;
+      }
+      return false;
+    }
+    displayTutorial().then((status){
+      if(status){
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _showTutorialCoachMark();
+        });
+      }
+    });
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
@@ -337,8 +146,9 @@ Ketik pada kotak box berikut untuk mengambil inputan dari keyboard, hasil dari p
                     ),
                     Container(
                       width: MediaQuery.of(context).size.width * 0.8,
-                      margin: EdgeInsets.only(top: 140,left: 50),
-                      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                      margin: EdgeInsets.only(top: 140, left: 50),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                       child: Column(
                         children: [
                           Row(
@@ -368,7 +178,8 @@ Ketik pada kotak box berikut untuk mengambil inputan dari keyboard, hasil dari p
                                 onPressed: () {
                                   String temp = _selectedSourceLanguage;
                                   setState(() {
-                                    _selectedSourceLanguage = _selectedTargetLanguage;
+                                    _selectedSourceLanguage =
+                                        _selectedTargetLanguage;
                                     _selectedTargetLanguage = temp;
                                   });
                                 },
@@ -451,7 +262,8 @@ Ketik pada kotak box berikut untuk mengambil inputan dari keyboard, hasil dari p
                         maxLines: null,
                         decoration: InputDecoration(
                           border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 80, vertical: 13),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 80, vertical: 13),
                           hintText: "Or type with your keyboard",
                         ),
                       ),
@@ -476,7 +288,7 @@ Ketik pada kotak box berikut untuk mengambil inputan dari keyboard, hasil dari p
                     ),
                     SizedBox(width: 5),
                     Text(
-                      'Tap to speak for input word or sentence',
+                      'Tap to listen to the translated results',
                       style: TextStyle(fontSize: 14, color: Colors.white),
                     ),
                   ],
@@ -491,18 +303,41 @@ Ketik pada kotak box berikut untuk mengambil inputan dari keyboard, hasil dari p
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: Stack(
                   children: [
-                    Text(
-                      _translationResult,
-                      style: TextStyle(
-                        fontSize: 16,
+                    SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(10.0),
+                            child: Text(
+                              _translationResult,
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 8,
+                      right: 8,
+                      child: IconButton(
+                        icon: Icon(Icons.copy),
+                        onPressed: () {
+                          Clipboard.setData(ClipboardData(text: _translationResult));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Copied to clipboard")),
+                          );
+                        },
                       ),
                     ),
                   ],
                 ),
               ),
+
               Container(
                 margin: EdgeInsets.only(top: 10),
                 child: ElevatedButton(
@@ -563,20 +398,24 @@ Ketik pada kotak box berikut untuk mengambil inputan dari keyboard, hasil dari p
 
   void _translateText() async {
     if (_text.isNotEmpty) {
-      if(_selectedSourceLanguage == 'English' && _selectedTargetLanguage == 'Bima'){
+      if (_selectedSourceLanguage == 'English' &&
+          _selectedTargetLanguage == 'Bima') {
         try {
-          ApiCloudModel? translationText = await apiCloudServiceReverse.getApiCloudReverse(_text);
-          if(translationText != null) {
+          ApiCloudModel? translationText =
+              await apiCloudServiceReverse.getApiCloudReverse(_text);
+          if (translationText != null) {
             String translatedText = translationText.data?.translatedText ?? '';
-            TranslationModel? translation = await translationServiceIndonesia.getTranslationReverse(translatedText);
-            if(translationText != null){
+            TranslationModel? translation = await translationServiceIndonesia
+                .getTranslationReverse(translatedText);
+            if (translationText != null) {
               setState(() {
                 _translationResult = translation!.data;
                 print(_translationResult);
               });
-            }else {
+            } else {
               setState(() {
-                _translationResult = 'Terjadi kesalahan saat mendapatkan data dari ApiCloud.';
+                _translationResult =
+                    'Terjadi kesalahan saat mendapatkan data dari ApiCloud.';
               });
             }
           }
@@ -586,19 +425,23 @@ Ketik pada kotak box berikut untuk mengambil inputan dari keyboard, hasil dari p
             _translationResult = 'Terjadi kesalahan saat menerjemahkan kata.';
           });
         }
-      }
-      else if(_selectedSourceLanguage == 'Bima' && _selectedTargetLanguage == 'English') {
+      } else if (_selectedSourceLanguage == 'Bima' &&
+          _selectedTargetLanguage == 'English') {
         try {
-          TranslationModel? translation = await translationService.getTranslation(_text);
+          TranslationModel? translation =
+              await translationService.getTranslation(_text);
           if (translation != null) {
-            ApiCloudModel? translationText = await apiCloudService.getApiCloud(translation.data, 'id', 'en');
+            ApiCloudModel? translationText =
+                await apiCloudService.getApiCloud(translation.data, 'id', 'en');
             if (translationText != null) {
               setState(() {
-                _translationResult = translationText.data?.translatedText ?? 'Tidak ada hasil terjemahan.';
+                _translationResult = translationText.data?.translatedText ??
+                    'Tidak ada hasil terjemahan.';
               });
             } else {
               setState(() {
-                _translationResult = 'Terjadi kesalahan saat mendapatkan data dari ApiCloud.';
+                _translationResult =
+                    'Terjadi kesalahan saat mendapatkan data dari ApiCloud.';
               });
             }
           } else {
@@ -612,78 +455,89 @@ Ketik pada kotak box berikut untuk mengambil inputan dari keyboard, hasil dari p
             _translationResult = 'Terjadi kesalahan saat menerjemahkan kata.';
           });
         }
-      }else if(_selectedSourceLanguage == 'Indonesia' && _selectedTargetLanguage == 'English'){
+      } else if (_selectedSourceLanguage == 'Indonesia' &&
+          _selectedTargetLanguage == 'English') {
         try {
-          ApiCloudModel? translationText = await apiCloudService.getApiCloud(_text, 'id', 'en');
-          if(translationText != null){
+          ApiCloudModel? translationText =
+              await apiCloudService.getApiCloud(_text, 'id', 'en');
+          if (translationText != null) {
             setState(() {
-              _translationResult = translationText.data?.translatedText ?? 'Tidak ada hasil terjemahan.';
+              _translationResult = translationText.data?.translatedText ??
+                  'Tidak ada hasil terjemahan.';
             });
-          }else {
+          } else {
             setState(() {
-              _translationResult = "Terjadi kesalahan saat mendapatkan Api CLoud";
+              _translationResult =
+                  "Terjadi kesalahan saat mendapatkan Api CLoud";
             });
           }
-        }catch(e) {
+        } catch (e) {
           print('Error fetching translation: $e');
           setState(() {
             _translationResult = 'Terjadi kesalahan saat menerjemahkan kata.';
           });
         }
-      }else if(_selectedSourceLanguage == 'English' && _selectedTargetLanguage == 'Indonesia'){
-        try{
-          ApiCloudModel? translationText = await apiCloudService.getApiCloud(_text, 'en', 'id');
-          if(translationText != null){
+      } else if (_selectedSourceLanguage == 'English' &&
+          _selectedTargetLanguage == 'Indonesia') {
+        try {
+          ApiCloudModel? translationText =
+              await apiCloudService.getApiCloud(_text, 'en', 'id');
+          if (translationText != null) {
             setState(() {
-              _translationResult = translationText.data?.translatedText ?? 'Tidak ada hasil terjemahan';
+              _translationResult = translationText.data?.translatedText ??
+                  'Tidak ada hasil terjemahan';
             });
-          }else {
+          } else {
             setState(() {
-              _translationResult = "Terjadi kesalahan saat mendapatkan APiCloud";
+              _translationResult =
+                  "Terjadi kesalahan saat mendapatkan APiCloud";
             });
           }
-        }catch(e){
+        } catch (e) {
           print('Error fetching translation: $e');
           setState(() {
             _translationResult = 'Terjadi kesalahan saat menerjemahkan kata.';
           });
         }
-      }else if(_selectedSourceLanguage == 'Bima' && _selectedTargetLanguage == 'Indonesia'){
-        try  {
-          TranslationModel? translation = await translationService.getTranslation(_text);
-          if(translation != null){
+      } else if (_selectedSourceLanguage == 'Bima' &&
+          _selectedTargetLanguage == 'Indonesia') {
+        try {
+          TranslationModel? translation =
+              await translationService.getTranslation(_text);
+          if (translation != null) {
             setState(() {
               _translationResult = translation.data;
             });
-          }else {
+          } else {
             _translationResult = "Translate tidak ditemukan";
           }
-        }catch(e){
+        } catch (e) {
           print('Error fetching translation: $e');
           setState(() {
             _translationResult = 'Terjadi kesalahan saat menerjemahkan kata.';
           });
         }
-      }else if(_selectedSourceLanguage == 'Indonesia' && _selectedTargetLanguage == 'Bima'){
-        try{
-            TranslationModel? translation = await translationServiceIndonesia.getTranslationReverse(_text);
-            if(translation != null){
-              setState(() {
-                _translationResult = translation.data;
-              });
-            }else {
-              setState(() {
-                _translationResult = "Translate tidak ditemukan";
-              });
-            }
-        }catch(e){
+      } else if (_selectedSourceLanguage == 'Indonesia' &&
+          _selectedTargetLanguage == 'Bima') {
+        try {
+          TranslationModel? translation =
+              await translationServiceIndonesia.getTranslationReverse(_text);
+          if (translation != null) {
+            setState(() {
+              _translationResult = translation.data;
+            });
+          } else {
+            setState(() {
+              _translationResult = "Translate tidak ditemukan";
+            });
+          }
+        } catch (e) {
           print('Error fetching translation: $e');
           setState(() {
             _translationResult = 'Terjadi kesalahan saat menerjemahkan kata.';
           });
         }
-      }
-      else {
+      } else {
         setState(() {
           _translationResult = 'Bahasa Tidak Ditemukan';
         });
@@ -694,17 +548,190 @@ Ketik pada kotak box berikut untuk mengambil inputan dari keyboard, hasil dari p
       });
     }
   }
+
+  void _initializePreferences() async {
+    prefs = await SharedPreferences.getInstance();
+  }
+
+  void _loadTutorialStatus() {
+    setState(() {
+      _showTutorial = prefs?.getBool('showTutorial') ?? true;
+    });
+  }
+
+  void _saveTutorialStatus() async {
+    await prefs?.setBool('showTutorial', false);
+  }
+
+  void _showTutorialCoachMark() {
+    if (_showTutorial) {
+      _initTarget();
+      tutorialCoachMark = TutorialCoachMark(
+        targets: targets,
+        onFinish: () {
+          print("tutorial finis");
+          setState(() {
+            //_showTutorial = false;
+            _saveTutorialStatus();
+          });
+        },
+      );
+      tutorialCoachMark?.show(context: context);
+    }
+  }
+
+  void _initTarget() {
+    targets = [
+      TargetFocus(identify: "sourceLang", keyTarget: sourceLang, contents: [
+        TargetContent(
+            align: ContentAlign.bottom,
+            builder: (context, controller) {
+              return CoachmarkDesc(
+                text:
+                "Tekan tombol dropdown berikut untuk memilih sumber bahasa",
+                onNext: () {
+                  controller.next();
+                },
+                onSkip: () {
+                  controller.skip();
+                },
+              );
+            }),
+      ]),
+      TargetFocus(identify: "reverse", keyTarget: reverse, contents: [
+        TargetContent(
+            align: ContentAlign.bottom,
+            builder: (context, controller) {
+              return CoachmarkDesc(
+                text:
+                "Tekan icon berikut untuk membalik sumber dan tujuan bahasa",
+                onNext: () {
+                  controller.next();
+                },
+                onSkip: () {
+                  controller.skip();
+                },
+              );
+            })
+      ]),
+      TargetFocus(identify: "targetLang", keyTarget: targetlang, contents: [
+        TargetContent(
+            align: ContentAlign.bottom,
+            builder: (context, controller) {
+              return CoachmarkDesc(
+                text: "Tekan dropdown berikut untuk memilih target bahasa",
+                onNext: () {
+                  controller.next();
+                },
+                onSkip: () {
+                  controller.skip();
+                },
+              );
+            })
+      ]),
+      TargetFocus(identify: "spechtotext", keyTarget: spechtotext, contents: [
+        TargetContent(
+            align: ContentAlign.bottom,
+            builder: (context, controller) {
+              return CoachmarkDesc(
+                text: "Tekan tombol microphone untuk merekan suara",
+                onNext: () {
+                  controller.next();
+                },
+                onSkip: () {
+                  controller.skip();
+                },
+              );
+            })
+      ]),
+      TargetFocus(
+          identify: "input",
+          keyTarget: input,
+          shape: ShapeLightFocus.RRect,
+          contents: [
+            TargetContent(
+                align: ContentAlign.bottom,
+                builder: (context, controller) {
+                  return CoachmarkDesc(
+                    text: """
+Ketik pada kotak box berikut untuk mengambil inputan dari keyboard, hasil dari pesan suara akan tampil pada bagian ini juga """,
+                    onNext: () {
+                      controller.next();
+                    },
+                    onSkip: () {
+                      controller.skip();
+                    },
+                  );
+                })
+          ]),
+      TargetFocus(identify: "microphone", keyTarget: microphone, contents: [
+        TargetContent(
+            align: ContentAlign.bottom,
+            builder: (context, controller) {
+              return CoachmarkDesc(
+                text: "Tekan tombol berikut untuk membunyikan hasil translate",
+                onNext: () {
+                  controller.next();
+                },
+                onSkip: () {
+                  controller.skip();
+                },
+              );
+            })
+      ]),
+      TargetFocus(
+          identify: "output",
+          keyTarget: output,
+          shape: ShapeLightFocus.RRect,
+          contents: [
+            TargetContent(
+                align: ContentAlign.top,
+                builder: (context, controller) {
+                  return CoachmarkDesc(
+                    text: "Hasil Translate akan tampil pada bagian ini",
+                    onNext: () {
+                      controller.next();
+                    },
+                    onSkip: () {
+                      controller.skip();
+                    },
+                  );
+                })
+          ]),
+      TargetFocus(
+          identify: "Buttontranslate",
+          keyTarget: Buttontranslate,
+          shape: ShapeLightFocus.RRect,
+          contents: [
+            TargetContent(
+                align: ContentAlign.top,
+                builder: (context, controller) {
+                  return CoachmarkDesc(
+                    text: "Tekan tombol ini untuk memulai translate",
+                    onNext: () {
+                      controller.next();
+                      _saveTutorialStatus();
+                    },
+                    onSkip: () {
+                      controller.skip();
+                    },
+                  );
+                })
+          ]),
+    ];
+  }
 }
 
+
+
 class CoachmarkDesc extends StatefulWidget {
-  const CoachmarkDesc({
-    super.key,
-    required this.text,
-    this.skip = "Skip",
-    this.next = "Next",
-    this.onSkip,
-    this.onNext
-  });
+  const CoachmarkDesc(
+      {Key? key,
+      required this.text,
+      this.skip = "Skip",
+      this.next = "Next",
+      this.onSkip,
+      this.onNext});
 
   final String text;
   final String skip;
@@ -717,7 +744,6 @@ class CoachmarkDesc extends StatefulWidget {
 }
 
 class _CoachmarkDescState extends State<CoachmarkDesc> {
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -745,9 +771,7 @@ class _CoachmarkDescState extends State<CoachmarkDesc> {
               SizedBox(width: 16),
               ElevatedButton(
                 onPressed: widget.onNext,
-                child: Text(
-                    widget.next
-                ),
+                child: Text(widget.next),
               ),
             ],
           )
