@@ -1,25 +1,31 @@
 import 'dart:convert';
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 import 'package:kamus_new/model/apicloud_model.dart';
 
 class ApiCloudService {
-  final url = 'https://api-kamus.jaksparohserver.my.id/api/cloud';
+  final String url = 'https://api-kamus.jaksparohserver.my.id/api/cloud';
 
   Future<ApiCloudModel?> getApiCloud(String word, String sourceLang, String targetLang) async {
-    final response = await post(
-        Uri.parse(url), body: {
-          "word"            : word,
-          "source_language" : sourceLang,
-          "target_language" : targetLang
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        body: {
+          "word": word,
+          "source_language": sourceLang,
+          "target_language": targetLang
+        },
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseBody = jsonDecode(response.body);
+        return ApiCloudModel.fromJson(responseBody);
+      } else {
+        return null;
       }
-    );
-
-    if(response.statusCode == 200){
-      final Map<String, dynamic> responseBody = jsonDecode(response.body);
-
-      return ApiCloudModel.fromJson(responseBody);
-    }else {
-      print('Error: ${response.statusCode}');
+    } catch (e) {
       return null;
     }
   }

@@ -6,8 +6,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:kamus_new/api/api_cloud.dart';
 import 'package:kamus_new/api/translation_service_inggris.dart';
 import 'package:kamus_new/model/apicloud_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import 'package:kamus_new/model/translation_model.dart';
+import 'package:kamus_new/utils/coachmark_desc.dart';
 
 class OcrTranslate extends StatefulWidget {
   const OcrTranslate({Key? key}) : super(key: key);
@@ -25,7 +27,6 @@ class _OcrTranslateState extends State<OcrTranslate> {
   final TranslationService translationServiceOcr = TranslationService();
   final ApiCloudService apiCloudService = ApiCloudService();
   String _translationResult = '';
-
   String _selectedSourceLanguage  = 'Indonesia';
   String _selectedTargetLanguage  = 'English';
   List<String> _sourceLanguages = [
@@ -33,7 +34,6 @@ class _OcrTranslateState extends State<OcrTranslate> {
     'English',
     'Bima'
   ];
-
   List<String> _targetLanguages = [
     'English',
     'Indonesia',
@@ -42,18 +42,13 @@ class _OcrTranslateState extends State<OcrTranslate> {
 
   TutorialCoachMark? tutorialCoachMark;
   List<TargetFocus> targets = [];
+  SharedPreferences? prefs;
 
   GlobalKey tulisangambar = GlobalKey();
   GlobalKey galery        = GlobalKey();
   GlobalKey camera        = GlobalKey();
   GlobalKey crop          = GlobalKey();
 
-  void _showTutorialCoachMark(){
-    _initTarget();
-    tutorialCoachMark = TutorialCoachMark(
-      targets: targets,
-    )..show(context: context);
-  }
 
   void _initTarget(){
     targets = [
@@ -145,8 +140,10 @@ class _OcrTranslateState extends State<OcrTranslate> {
 
   void initState(){
     super.initState();
-    _showTutorialCoachMark();
+    _checkTutorialShown();
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -416,44 +413,42 @@ class _OcrTranslateState extends State<OcrTranslate> {
   }
 
   Future<void> _cropImage(XFile pickedFile) async {
-    if (pickedFile != null) {
-      final croppedFile = await ImageCropper().cropImage(
-        sourcePath: pickedFile.path,
-        compressFormat: ImageCompressFormat.jpg,
-        compressQuality: 100,
-        uiSettings: [
-          AndroidUiSettings(
-              toolbarTitle: 'Cropper',
-              toolbarColor: Colors.deepOrange,
-              toolbarWidgetColor: Colors.white,
-              initAspectRatio: CropAspectRatioPreset.original,
-              lockAspectRatio: false),
-          IOSUiSettings(
-            title: 'Cropper',
+    final croppedFile = await ImageCropper().cropImage(
+      sourcePath: pickedFile.path,
+      compressFormat: ImageCompressFormat.jpg,
+      compressQuality: 100,
+      uiSettings: [
+        AndroidUiSettings(
+            toolbarTitle: 'Cropper',
+            toolbarColor: Colors.deepOrange,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false),
+        IOSUiSettings(
+          title: 'Cropper',
+        ),
+        WebUiSettings(
+          context: context,
+          presentStyle: CropperPresentStyle.dialog,
+          boundary: const CroppieBoundary(
+            width: 520,
+            height: 520,
           ),
-          WebUiSettings(
-            context: context,
-            presentStyle: CropperPresentStyle.dialog,
-            boundary: const CroppieBoundary(
-              width: 520,
-              height: 520,
-            ),
-            viewPort:
-            const CroppieViewPort(width: 480, height: 480, type: 'circle'),
-            enableExif: true,
-            enableZoom: true,
-            showZoomer: true,
-          ),
-        ],
-      );
-      if (croppedFile != null) {
-        setState(() {
-          _croppedImageFile = croppedFile;
-          getRecognisedText(croppedFile);
-        });
-      }
+          viewPort:
+          const CroppieViewPort(width: 480, height: 480, type: 'circle'),
+          enableExif: true,
+          enableZoom: true,
+          showZoomer: true,
+        ),
+      ],
+    );
+    if (croppedFile != null) {
+      setState(() {
+        _croppedImageFile = croppedFile;
+        getRecognisedText(croppedFile);
+      });
     }
-  }
+    }
 
   void getRecognisedText(CroppedFile image) async {
     final inputImage = InputImage.fromFilePath(image.path);
@@ -573,66 +568,28 @@ class _OcrTranslateState extends State<OcrTranslate> {
       });
     }
   }
-}
 
+  Future<void> _checkTutorialShown() async {
+    final prefs = await SharedPreferences.getInstance();
+    final shown = prefs.getBool('tutorialShownOcr') ?? false;
+    if(!shown){
+      _showTutorialCoachMark();
+    }
+  }
 
-class CoachmarkDesc extends StatefulWidget {
-  const CoachmarkDesc({
-    super.key,
-    required this.text,
-    this.skip = "Skip",
-    this.next = "Next",
-    this.onSkip,
-    this.onNext
-  });
+  void _saveTutorialShown() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool('tutorialShownOcr', true);
+  }
 
-  final String text;
-  final String skip;
-  final String next;
-  final void Function()? onSkip;
-  final void Function()? onNext;
-
-  @override
-  State<CoachmarkDesc> createState() => _CoachmarkDescState();
-}
-
-class _CoachmarkDescState extends State<CoachmarkDesc> {
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(5),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            widget.text,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              TextButton(
-                onPressed: widget.onSkip,
-                child: Text(widget.skip),
-              ),
-              SizedBox(width: 16),
-              ElevatedButton(
-                onPressed: widget.onNext,
-                child: Text(
-                    widget.next
-                ),
-              ),
-            ],
-          )
-        ],
-      ),
+  void _showTutorialCoachMark() {
+    _initTarget();
+    tutorialCoachMark = TutorialCoachMark(
+      targets: targets,
+      onFinish: () {
+        _saveTutorialShown();
+      }
     );
+    tutorialCoachMark?.show(context: context);
   }
 }

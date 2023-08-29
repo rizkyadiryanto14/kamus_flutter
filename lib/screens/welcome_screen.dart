@@ -3,7 +3,6 @@ import 'package:kamus_new/widgets/main_page.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
-
   @override
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
@@ -14,13 +13,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(milliseconds: 100), () {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         _showUI = true;
-      }); 
+      });
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -36,40 +34,22 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 height: constraints.maxHeight,
                 child: Stack(
                   children: [
-                    Stack(
-                      children: [
-                        Container(
-                          width: constraints.maxWidth,
-                          height: constraints.maxHeight / 1.6,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                          ),
+                    Container(
+                      width: constraints.maxWidth,
+                      height: constraints.maxHeight / 1.6,
+                      decoration: BoxDecoration(
+                        color: Color(0xFF674AEF),
+                        borderRadius: BorderRadius.only(
+                          bottomRight: Radius.circular(70)
+                        )
+                      ),
+                      child: Center(
+                        child: Image.asset(
+                          "images/KRongga_Text.png",
+                          scale: 0.9,
+                          width: 290,
+                          color: Colors.deepOrangeAccent,
                         ),
-                        Container(
-                          width: constraints.maxWidth,
-                          height: constraints.maxHeight / 1.6,
-                          decoration: BoxDecoration(
-                            color: Color(0xFF674AEF),
-                            borderRadius:
-                            BorderRadius.only(bottomRight: Radius.circular(70)),
-                          ),
-                          child: Center(
-                            child: Image.asset(
-                              "images/KRongga_Text.png",
-                              scale: 0.9,
-                              width: 290,
-                              color: Colors.deepOrangeAccent,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Container(
-                        width: constraints.maxWidth,
-                        height: constraints.maxHeight / 2.666,
-                        decoration: BoxDecoration(color: Color(0xFF674AEF)),
                       ),
                     ),
                     Align(
@@ -81,8 +61,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(70),
-                          ),
+                            topLeft: Radius.circular(70)
+                          )
                         ),
                         child: Column(
                           children: [
@@ -92,8 +72,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                 fontSize: 25,
                                 fontWeight: FontWeight.w600,
                                 letterSpacing: 1,
-                                wordSpacing: 2,
-                              ),
+                                wordSpacing: 2
+                              )
                             ),
                             SizedBox(height: 15),
                             Padding(
@@ -103,9 +83,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 17,
-                                  color: Colors.black.withOpacity(0.6),
-                                ),
-                              ),
+                                  color: Colors.black.withOpacity(0.6)
+                                )
+                              )
                             ),
                             SizedBox(height: 20),
                             Material(
@@ -116,38 +96,35 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => MainPage(),
-                                    ),
+                                      builder: (context) => MainPage()
+                                    )
                                   );
                                 },
                                 child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 15, horizontal: 80),
+                                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 80),
                                   child: Text(
                                     "Mulai Sekarang",
-                                    //key: welcome,
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 22,
                                       fontWeight: FontWeight.bold,
-                                      letterSpacing: 1,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
+                                      letterSpacing: 1
+                                    )
+                                  )
+                                )
+                              )
+                            )
                           ],
-                        ),
+                        )
                       ),
                     ),
                   ],
                 ),
               ),
-            )
+            ),
           );
         },
       ),
     );
   }
 }
-

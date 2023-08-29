@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:kamus_new/screens/contribute.dart';
 import 'package:kamus_new/screens/ocr_translate.dart';
-import 'package:kamus_new/screens/translate_screen_inggris.dart';
+import 'package:kamus_new/screens/translate_screen.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
-
   @override
   State<MainPage> createState() => _MainPageState();
 }
@@ -13,7 +12,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
 
   List pages = [
-    TranslateScreenEnglish(),
+    TranslateScreen(),
     Contribute(),
     OcrTranslate()
   ];
@@ -23,7 +22,6 @@ class _MainPageState extends State<MainPage> {
       currentIndex = index;
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,8 +38,8 @@ class _MainPageState extends State<MainPage> {
         showSelectedLabels: true,
         elevation: 0,
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.translate), label: 'English'),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Contribut'),
+          BottomNavigationBarItem(icon: Icon(Icons.translate), label: 'Translate'),
+          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Contribute'),
           BottomNavigationBarItem(icon: Icon(Icons.image_outlined), label: 'OCR')
         ],
       ),

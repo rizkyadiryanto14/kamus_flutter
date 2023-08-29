@@ -10,17 +10,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kamus_new/api/api_cloud_reverse.dart';
 import 'package:kamus_new/api/translation_service_indonesia.dart';
 import 'package:flutter/services.dart';
+import 'package:kamus_new/utils/coachmark_desc.dart';
 
-class TranslateScreenEnglish extends StatefulWidget {
-  const TranslateScreenEnglish({Key? key}) : super(key: key);
+class TranslateScreen extends StatefulWidget {
+  const TranslateScreen({Key? key}) : super(key: key);
 
   @override
-  State<TranslateScreenEnglish> createState() => _TranslateScreenEnglishState();
+  State<TranslateScreen> createState() => _TranslateScreenState();
 }
 
-class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
-  FlutterTts flutterTts = FlutterTts();
-  late stt.SpeechToText _speech;
+class _TranslateScreenState extends State<TranslateScreen> {
+  FlutterTts? flutterTts;
+  stt.SpeechToText? _speech;
   String _text = '';
   bool _isListening = false;
   final TextEditingController _textEditingController = TextEditingController();
@@ -40,8 +41,6 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
   List<TargetFocus> targets = [];
 
   SharedPreferences? prefs;
-  bool _showTutorial = true;
-
   GlobalKey spechtotext = GlobalKey();
   GlobalKey input = GlobalKey();
   GlobalKey output = GlobalKey();
@@ -54,48 +53,20 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
   @override
   void initState() {
     super.initState();
-    _initializePreferences();
-    _loadTutorialStatus();
     _speech = stt.SpeechToText();
-
-    if (_showTutorial) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showTutorialCoachMark();
-      });
-    }
-    _textEditingController.addListener(() {
-      setState(() {
-        _text = _textEditingController.text;
-      });
-    });
+    _checkTutorialShown();
   }
 
   @override
   void dispose() {
     _textEditingController.dispose();
+    flutterTts?.stop();
+    _speech?.stop();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-
-    SharedPreferences preferences;
-    displayTutorial() async {
-      preferences = await SharedPreferences.getInstance();
-      bool? showTutorialStatus = preferences.getBool("displayTutorial");
-      if(showTutorialStatus == null){
-        preferences.setBool("displayTutorial", false);
-        return true;
-      }
-      return false;
-    }
-    displayTutorial().then((status){
-      if(status){
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _showTutorialCoachMark();
-        });
-      }
-    });
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
@@ -353,15 +324,18 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
   }
 
   Future<void> _speak() async {
-    await flutterTts.setLanguage("en-US");
-    await flutterTts.setPitch(1.0);
-    await flutterTts.setSpeechRate(0.5);
-    await flutterTts.speak(_translationResult);
+    await flutterTts!.setLanguage("en-US");
+    await flutterTts!.setPitch(1.0);
+    await flutterTts!.setSpeechRate(0.5);
+    // Add input validation and sanitization
+    var safeText = _sanitizeInput(_translationResult);
+
+    await flutterTts!.speak(safeText);
   }
 
   void _listen() async {
     if (!_isListening) {
-      bool available = await _speech.initialize(
+      bool available = await _speech!.initialize(
         onStatus: (status) {
           if (status == 'notListening') {
             setState(() {
@@ -373,16 +347,17 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
           print('Speech recognition error: $error');
         },
       );
+
       if (available) {
         setState(() {
           _isListening = true;
         });
-        _speech.listen(
+        _speech!.listen(
           onResult: (result) async {
             if (result.finalResult) {
               setState(() {
                 _text = result.recognizedWords;
-                _textEditingController.text = _text;
+                _textEditingController.text = _sanitizeInput(_text);
               });
             }
           },
@@ -391,10 +366,17 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
     } else {
       setState(() {
         _isListening = false;
-        _speech.stop();
+        _speech!.stop();
       });
     }
   }
+
+  // Add input sanitization
+  String _sanitizeInput(String input) {
+    // sanitize and validate input here
+    return input;
+  }
+
 
   void _translateText() async {
     if (_text.isNotEmpty) {
@@ -549,35 +531,31 @@ class _TranslateScreenEnglishState extends State<TranslateScreenEnglish> {
     }
   }
 
-  void _initializePreferences() async {
-    prefs = await SharedPreferences.getInstance();
+  Future<void> _checkTutorialShown() async {
+    final prefs = await SharedPreferences.getInstance();
+    final shown = prefs.getBool('tutorialShown') ?? false;
+
+    if (!shown) {
+      _showTutorialCoachMark();
+    }
   }
 
-  void _loadTutorialStatus() {
-    setState(() {
-      _showTutorial = prefs?.getBool('showTutorial') ?? true;
-    });
-  }
+  void _saveTutorialShown() async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'tutorialShown';
 
-  void _saveTutorialStatus() async {
-    await prefs?.setBool('showTutorial', false);
+    prefs.setBool(key, true);
   }
 
   void _showTutorialCoachMark() {
-    if (_showTutorial) {
-      _initTarget();
-      tutorialCoachMark = TutorialCoachMark(
+    _initTarget();
+    tutorialCoachMark = TutorialCoachMark(
         targets: targets,
         onFinish: () {
-          print("tutorial finis");
-          setState(() {
-            //_showTutorial = false;
-            _saveTutorialStatus();
-          });
-        },
-      );
-      tutorialCoachMark?.show(context: context);
-    }
+          _saveTutorialShown();
+        }
+    );
+    tutorialCoachMark?.show(context: context);
   }
 
   void _initTarget() {
@@ -710,7 +688,6 @@ Ketik pada kotak box berikut untuk mengambil inputan dari keyboard, hasil dari p
                     text: "Tekan tombol ini untuk memulai translate",
                     onNext: () {
                       controller.next();
-                      _saveTutorialStatus();
                     },
                     onSkip: () {
                       controller.skip();
@@ -719,64 +696,5 @@ Ketik pada kotak box berikut untuk mengambil inputan dari keyboard, hasil dari p
                 })
           ]),
     ];
-  }
-}
-
-
-
-class CoachmarkDesc extends StatefulWidget {
-  const CoachmarkDesc(
-      {Key? key,
-      required this.text,
-      this.skip = "Skip",
-      this.next = "Next",
-      this.onSkip,
-      this.onNext});
-
-  final String text;
-  final String skip;
-  final String next;
-  final void Function()? onSkip;
-  final void Function()? onNext;
-
-  @override
-  State<CoachmarkDesc> createState() => _CoachmarkDescState();
-}
-
-class _CoachmarkDescState extends State<CoachmarkDesc> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(5),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            widget.text,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              TextButton(
-                onPressed: widget.onSkip,
-                child: Text(widget.skip),
-              ),
-              SizedBox(width: 16),
-              ElevatedButton(
-                onPressed: widget.onNext,
-                child: Text(widget.next),
-              ),
-            ],
-          )
-        ],
-      ),
-    );
   }
 }
