@@ -1,13 +1,14 @@
 # Aplikasi Karongga: Kamus Bima-Indonesia-Inggris
 
 ## Folder Structure
-
+<pre>
 lib/
 ├── api/ 
 ├── model/
 ├── screens/
 ├── utils/
 └── widget/
+</pre>
 
 ## Karongga Features
 - Splash Screen
