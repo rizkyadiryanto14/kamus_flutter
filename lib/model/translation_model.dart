@@ -3,7 +3,8 @@ class TranslationModel {
   final String message;
   final String data;
 
-  TranslationModel({required this.status, required this.message, required this.data});
+  TranslationModel(
+      {required this.status, required this.message, required this.data});
 
   factory TranslationModel.fromJson(Map<String, dynamic> json) {
     return TranslationModel(

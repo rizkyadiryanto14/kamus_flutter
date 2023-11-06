@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:kamus_new/screens/contribute.dart';
 import 'package:kamus_new/screens/ocr_translate.dart';
 import 'package:kamus_new/screens/translate_screen.dart';
+import 'package:kamus_new/screens/kamus.dart';
+
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -10,18 +12,14 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-
-  List pages = [
-    TranslateScreen(),
-    Contribute(),
-    OcrTranslate()
-  ];
+  List pages = [TranslateScreen(), Contribute(), OcrTranslate(), KamusScreen()];
   int currentIndex = 0;
-  void onTap(int index){
+  void onTap(int index) {
     setState(() {
       currentIndex = index;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,9 +36,13 @@ class _MainPageState extends State<MainPage> {
         showSelectedLabels: true,
         elevation: 0,
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.translate), label: 'Translate'),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Contribute'),
-          BottomNavigationBarItem(icon: Icon(Icons.image_outlined), label: 'OCR')
+          BottomNavigationBarItem(
+              icon: Icon(Icons.translate), label: 'Translate'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.people), label: 'Contribute'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.image_outlined), label: 'OCR'),
+          BottomNavigationBarItem(icon: Icon(Icons.book_online), label: 'Kamus')
         ],
       ),
     );

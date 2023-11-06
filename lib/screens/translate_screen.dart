@@ -298,7 +298,8 @@ class _TranslateScreenState extends State<TranslateScreen> {
                       child: IconButton(
                         icon: Icon(Icons.copy),
                         onPressed: () {
-                          Clipboard.setData(ClipboardData(text: _translationResult));
+                          Clipboard.setData(
+                              ClipboardData(text: _translationResult));
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text("Copied to clipboard")),
                           );
@@ -308,7 +309,6 @@ class _TranslateScreenState extends State<TranslateScreen> {
                   ],
                 ),
               ),
-
               Container(
                 margin: EdgeInsets.only(top: 10),
                 child: ElevatedButton(
@@ -376,7 +376,6 @@ class _TranslateScreenState extends State<TranslateScreen> {
     // sanitize and validate input here
     return input;
   }
-
 
   void _translateText() async {
     if (_text.isNotEmpty) {
@@ -553,8 +552,7 @@ class _TranslateScreenState extends State<TranslateScreen> {
         targets: targets,
         onFinish: () {
           _saveTutorialShown();
-        }
-    );
+        });
     tutorialCoachMark?.show(context: context);
   }
 
@@ -566,7 +564,7 @@ class _TranslateScreenState extends State<TranslateScreen> {
             builder: (context, controller) {
               return CoachmarkDesc(
                 text:
-                "Tekan tombol dropdown berikut untuk memilih sumber bahasa",
+                    "Tekan tombol dropdown berikut untuk memilih sumber bahasa",
                 onNext: () {
                   controller.next();
                 },
@@ -582,7 +580,7 @@ class _TranslateScreenState extends State<TranslateScreen> {
             builder: (context, controller) {
               return CoachmarkDesc(
                 text:
-                "Tekan icon berikut untuk membalik sumber dan tujuan bahasa",
+                    "Tekan icon berikut untuk membalik sumber dan tujuan bahasa",
                 onNext: () {
                   controller.next();
                 },

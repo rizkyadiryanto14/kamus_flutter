@@ -14,17 +14,9 @@ class _ContributeState extends State<Contribute> {
 
   String _selectedSourceLanguage = 'Bahasa Indonesia';
   String _selectedTargetLanguage = 'English';
-  List<String> _sourceLanguages = [
-    'Bahasa Indonesia',
-    'English',
-    'Bima'
-  ];
+  List<String> _sourceLanguages = ['Bahasa Indonesia', 'English', 'Bima'];
 
-  List<String> _targetLanguages = [
-    'English',
-    'Bahasa Indonesia',
-    'Bima'
-  ];
+  List<String> _targetLanguages = ['English', 'Bahasa Indonesia', 'Bima'];
 
   final SaraKataService _saranKataService = SaraKataService();
 
@@ -110,7 +102,7 @@ class _ContributeState extends State<Contribute> {
                                 return DropdownMenuItem<String>(
                                   value: lang,
                                   child: Text(
-                                      lang,
+                                    lang,
                                   ),
                                 );
                               }).toList(),
@@ -179,28 +171,33 @@ class _ContributeState extends State<Contribute> {
     super.dispose();
   }
 
-  void InsertSaranKata() async{
+  void InsertSaranKata() async {
     String suggestion = _suggestionController.text;
     String sourceLang = _selectedSourceLanguage;
     String targetLang = _selectedTargetLanguage;
     print(targetLang);
 
-    SaranKataModel? result = await _saranKataService.getSaranKata(sourceLang, targetLang, suggestion);
+    SaranKataModel? result = await _saranKataService.getSaranKata(
+        sourceLang, targetLang, suggestion);
 
-    if(result != null && result.status){
-      showDialog(context: context, builder: (context) => AlertDialog(
-        title: Text('Berhasil'),
-        content: Text('Saran kata telah di simpan : $suggestion'),
-        actions: [
-          ElevatedButton(onPressed: () {
-            Navigator.of(context).pop();
-          }, child: Text('OK'),
-          ),
-        ],
+    if (result != null && result.status) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Berhasil'),
+          content: Text('Saran kata telah di simpan : $suggestion'),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
         ),
       );
       _suggestionController.clear();
-    }else {
+    } else {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(

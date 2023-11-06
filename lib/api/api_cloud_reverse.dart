@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:kamus_new/model/apicloud_model.dart';
 
 class ApiCloudServiceReverse {
-  final url = 'https://api-kamus.jaksparohserver.my.id/api/reverse';
+  final url = 'http://karongga.my.id/api/reverse';
 
   Future<ApiCloudModel?> getApiCloudReverse(String word) async {
     try {

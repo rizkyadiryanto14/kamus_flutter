@@ -3,7 +3,7 @@ import 'package:http/http.dart';
 import 'package:kamus_new/model/translation_model.dart';
 
 class TranslationService {
-  final url = 'https://api-kamus.jaksparohserver.my.id/kamus/translate';
+  final url = 'http://karongga.my.id/kamus/translate';
 
   Future<TranslationModel?> getTranslation(String word) async {
     try {

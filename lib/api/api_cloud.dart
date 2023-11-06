@@ -3,9 +3,10 @@ import 'package:http/http.dart' as http;
 import 'package:kamus_new/model/apicloud_model.dart';
 
 class ApiCloudService {
-  final String url = 'https://api-kamus.jaksparohserver.my.id/api/cloud';
+  final String url = 'http://karongga.my.id/api/cloud';
 
-  Future<ApiCloudModel?> getApiCloud(String word, String sourceLang, String targetLang) async {
+  Future<ApiCloudModel?> getApiCloud(
+      String word, String sourceLang, String targetLang) async {
     try {
       final response = await http.post(
         Uri.parse(url),
