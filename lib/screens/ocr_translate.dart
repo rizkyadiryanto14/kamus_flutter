@@ -343,37 +343,6 @@ class _OcrTranslateState extends State<OcrTranslate> {
                     ),
                   ),
                   SizedBox(width: 10),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.grey,
-                      backgroundColor: Colors.white,
-                      shadowColor: Colors.grey[400],
-                      elevation: 10,
-                      shape: RoundedRectangleBorder(
-                          borderRadius:
-                          BorderRadius.circular(8.0)),
-                    ),
-                    onPressed: () {
-                      //_cropImage();
-                    },
-                    child: Column(
-                      children: [
-                        Icon(
-                          Icons.crop,
-                          size: 20,
-                          color: Colors.green,
-                          key: crop,
-                        ),
-                        Text(
-                          "Crop",
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ],
               ),
               Container(
